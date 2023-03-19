@@ -20,6 +20,8 @@ model User {
   email     String  @unique
   hash      String
 
+  role ROLE @default(STUDENT)
+
   Tests Test[]
 
   @@map("users")
@@ -30,8 +32,9 @@ model Test {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ownerId Int
-  user    User @relation(fields: [ownerId], references: [id])
+  ownerId  Int
+  user     User       @relation(fields: [ownerId], references: [id])
+  Question Question[]
 
   @@map("tests")
 }
@@ -42,6 +45,11 @@ model Question {
   updatedAt DateTime @updatedAt
 
   testId Int
+  test   Test     @relation(fields: [testId], references: [id])
+  Answer Answer[]
+
+  text String
+  type QuestionTypes @default(SELECT_ONE)
 
   @@map("questions")
 }
@@ -52,6 +60,25 @@ model Answer {
   updatedAt DateTime @updatedAt
 
   questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+
+  text    String
+  correct Boolean
 
   @@map("answers")
+}
+
+enum QuestionTypes {
+  CHECKBOX
+  RADIO
+  SIMPLE_ANSWER
+  EXPLAIN_ANSWER
+  SELECT_ONE
+}
+
+enum ROLE {
+  ADMIN
+  MODERATOR
+  TEACHER
+  STUDENT
 }
