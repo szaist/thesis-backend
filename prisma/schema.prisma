@@ -36,6 +36,9 @@ model Test {
   user     User       @relation(fields: [ownerId], references: [id])
   Question Question[]
 
+  title       String
+  description String
+
   @@map("tests")
 }
 
