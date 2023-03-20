@@ -27,16 +27,16 @@ export class AnswerController {
         return this.answerService.insertAnswer(dto)
     }
 
-    @Patch()
+    @Patch('/:id')
     async updateAnswer(
-        @Body('answerId') answerId: number,
+        @Param('id') answerId: number,
         @Body() dto: InsertAnswerDto,
     ) {
         return this.answerService.updateAnswer(answerId, dto)
     }
 
-    @Delete()
-    async deleteAnswer(@Body('answerId') answerId: number) {
+    @Delete('/:id')
+    async deleteAnswer(@Param('id') answerId: number) {
         return this.answerService.deleteAnswer(answerId)
     }
 }

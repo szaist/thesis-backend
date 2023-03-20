@@ -13,13 +13,14 @@ import { QuestionService } from './question.service'
 @Controller('question')
 export class QuestionController {
     constructor(private questionService: QuestionService) {}
-    @Get()
-    async getQuestion(
-        @Param('questionId') questionId,
-        @Param('testId') testId,
-    ) {
-        if (questionId) return this.questionService.getQuestionById(questionId)
-        else return this.questionService.getQuestionsByTestId(testId)
+    @Get('/test/:id')
+    async getQuestionByTest(@Param('id') testId) {
+        return this.questionService.getQuestionsByTestId(testId)
+    }
+
+    @Get('/:id')
+    async getQuestion(@Param('id') questionId) {
+        return this.questionService.getQuestionById(questionId)
     }
 
     @Post()
@@ -27,14 +28,14 @@ export class QuestionController {
         return this.questionService.insertQuestion(dto)
     }
 
-    @Delete()
-    async deleteQuestion(@Body('questionId') questionId: number) {
+    @Delete('/:id')
+    async deleteQuestion(@Param('id') questionId: number) {
         return this.questionService.deleteQuestion(questionId)
     }
 
-    @Patch()
+    @Patch('/:id')
     async updateQuestion(
-        @Body('questionId') questionId,
+        @Param('id') questionId,
         @Body() dto: InsertQuestionDto,
     ) {
         return this.updateQuestion(questionId, dto)
