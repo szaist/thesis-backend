@@ -25,7 +25,7 @@ export class AuthService {
             })
             delete user.hash
 
-            return user
+            return { data: user }
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {

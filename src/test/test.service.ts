@@ -18,7 +18,7 @@ export class TestService {
             })
 
             return {
-                test,
+                data: test,
             }
         } catch (error) {
             console.error('getTestById: ', error)
@@ -38,7 +38,7 @@ export class TestService {
                 },
             })
 
-            return { tests }
+            return { data: tests }
         } catch (error) {
             console.error('getTestsByOwnerId: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -54,7 +54,7 @@ export class TestService {
             const tests = await this.prisma.test.findMany({})
 
             return {
-                tests,
+                data: tests,
             }
         } catch (error) {
             console.error('GetAllTests: ', error)
@@ -74,7 +74,7 @@ export class TestService {
             })
 
             return {
-                createdTest,
+                data: createdTest,
             }
         } catch (error) {
             console.error('InsertTest: ', error)
@@ -89,12 +89,16 @@ export class TestService {
     //Patch
     async updateTest(testId: number, dto: InsertTestDto) {
         try {
-            await this.prisma.test.update({
+            const response = await this.prisma.test.update({
                 where: {
                     id: testId,
                 },
                 data: dto,
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {
             console.error('updateTest: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -106,11 +110,15 @@ export class TestService {
     // Delete
     async deleteTest(testId: number) {
         try {
-            await this.prisma.test.delete({
+            const response = await this.prisma.test.delete({
                 where: {
                     id: testId,
                 },
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {
             console.log('deleteTest: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

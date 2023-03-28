@@ -18,7 +18,7 @@ export class AnswerService {
             })
 
             return {
-                answers,
+                data: answers,
             }
         } catch (error) {
             console.error('getAnswersById: ', error)
@@ -29,11 +29,11 @@ export class AnswerService {
     //Insert
     async insertAnswer(dto: InsertAnswerDto) {
         try {
-            await this.prisma.answer.create({
+            const response = await this.prisma.answer.create({
                 data: dto,
             })
 
-            return {}
+            return { data: response }
         } catch (error) {
             console.error('insertAnswer: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -46,12 +46,16 @@ export class AnswerService {
     // Update
     async updateAnswer(answerId: number, dto: InsertAnswerDto) {
         try {
-            await this.prisma.answer.update({
+            const response = await this.prisma.answer.update({
                 where: {
                     id: answerId,
                 },
                 data: dto,
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {
             console.error('updateAnswer: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -64,11 +68,15 @@ export class AnswerService {
     // delete
     async deleteAnswer(answerId: number) {
         try {
-            await this.prisma.answer.delete({
+            const response = await this.prisma.answer.delete({
                 where: {
                     id: answerId,
                 },
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {
             console.error('deleteAnswer: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

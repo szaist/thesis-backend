@@ -22,7 +22,7 @@ export class QuestionService {
             }
 
             return {
-                question,
+                data: question,
             }
         } catch (error) {
             console.error('questionGetById', error)
@@ -42,7 +42,7 @@ export class QuestionService {
             })
 
             return {
-                questions,
+                data: questions,
             }
         } catch (error) {
             console.error('questionsByTestId', error)
@@ -53,9 +53,13 @@ export class QuestionService {
     // Insert
     async insertQuestion(dto: InsertQuestionDto) {
         try {
-            await this.prisma.question.create({
+            const response = await this.prisma.question.create({
                 data: dto,
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {
             console.error('insertQuestion', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -77,7 +81,7 @@ export class QuestionService {
             })
 
             return {
-                updatedQuestion,
+                data: updatedQuestion,
             }
         } catch (error) {
             console.error('updateQuestion: ', error)
@@ -91,11 +95,15 @@ export class QuestionService {
 
     async deleteQuestion(questionId: number) {
         try {
-            await this.prisma.question.delete({
+            const response = await this.prisma.question.delete({
                 where: {
                     id: questionId,
                 },
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {
             console.error('deleteQuestion: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
