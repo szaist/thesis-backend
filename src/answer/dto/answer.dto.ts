@@ -2,7 +2,6 @@ import { IsNotEmpty, IsString, IsNumber, IsBoolean } from 'class-validator'
 
 export class InsertAnswerDto {
     @IsNumber()
-    @IsNotEmpty()
     questionId: number
 
     @IsNotEmpty()
@@ -11,4 +10,7 @@ export class InsertAnswerDto {
 
     @IsBoolean()
     correct: boolean
+
+    @IsNumber()
+    point: number
 }

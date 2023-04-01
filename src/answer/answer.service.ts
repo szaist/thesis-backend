@@ -32,7 +32,6 @@ export class AnswerService {
             const response = await this.prisma.answer.create({
                 data: dto,
             })
-
             return { data: response }
         } catch (error) {
             console.error('insertAnswer: ', error)

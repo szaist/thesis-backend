@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
+import { Prisma, Question } from '@prisma/client'
 import { Errors } from 'src/prisma/errors'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { InsertTestDto } from './dto'
@@ -17,8 +17,33 @@ export class TestService {
                 },
             })
 
+            const question = await this.prisma.question.findMany({
+                where: {
+                    testId: testId,
+                },
+            })
+
+            const questionsWithAnswers = await question.reduce(
+                async (arr: any, q: Question) => {
+                    const results = await arr
+                    const answers = await this.prisma.answer.findMany({
+                        where: {
+                            questionId: q.id,
+                        },
+                    })
+
+                    results.push({
+                        ...q,
+                        answers: [...answers],
+                    })
+
+                    return results
+                },
+                [],
+            )
+
             return {
-                data: test,
+                data: { test: { ...test, questions: questionsWithAnswers } },
             }
         } catch (error) {
             console.error('getTestById: ', error)

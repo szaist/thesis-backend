@@ -21,8 +21,16 @@ export class QuestionService {
                 throw new NotFoundException('Question not found!')
             }
 
+            const answers = await this.prisma.answer.findMany({
+                where: {
+                    questionId: questionId,
+                },
+            })
+
             return {
-                data: question,
+                data: {
+                    question: { ...question, answers },
+                },
             }
         } catch (error) {
             console.error('questionGetById', error)

@@ -22,7 +22,10 @@ model User {
 
   role ROLE @default(STUDENT)
 
-  Tests Test[]
+  Tests                Test[]
+  QuestionAnswered     QuestionAnswered[]
+  TestFilled           TestFilled[]
+  UsersToUpComingTests UsersToUpComingTests[]
 
   @@map("users")
 }
@@ -36,8 +39,9 @@ model Test {
   user     User       @relation(fields: [ownerId], references: [id])
   Question Question[]
 
-  title       String
-  description String
+  title        String
+  description  String
+  UpComingTest UpComingTest[]
 
   @@map("tests")
 }
@@ -51,8 +55,9 @@ model Question {
   test   Test     @relation(fields: [testId], references: [id])
   Answer Answer[]
 
-  text String
-  type QuestionTypes @default(SELECT_ONE)
+  text             String
+  type             QuestionTypes      @default(SELECT_ONE)
+  QuestionAnswered QuestionAnswered[]
 
   @@map("questions")
 }
@@ -65,15 +70,75 @@ model Answer {
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])
 
-  text    String
-  correct Boolean
+  text             String
+  correct          Boolean
+  point            Float              @default(0)
+  QuestionAnswered QuestionAnswered[]
 
   @@map("answers")
 }
 
+model TestFilled {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  startDate DateTime @default(now())
+  endDate   DateTime
+  submitted Boolean  @default(false)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  upComingTestId Int
+  upComingTest   UpComingTest @relation(fields: [upComingTestId], references: [id])
+}
+
+model QuestionAnswered {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+
+  answerId Int
+  answer   Answer @relation(fields: [answerId], references: [id])
+}
+
+model UpComingTest {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  testId Int
+  test   Test @relation(fields: [testId], references: [id])
+
+  startDate            DateTime
+  lastStartDate        DateTime
+  UsersToUpComingTests UsersToUpComingTests[]
+  TestFilled           TestFilled[]
+
+  @@map("upcomingtests")
+}
+
+model UsersToUpComingTests {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  upComingTestId Int
+  upComingTest   UpComingTest @relation(fields: [upComingTestId], references: [id])
+}
+
 enum QuestionTypes {
   CHECKBOX
-  RADIO
   SIMPLE_ANSWER
   EXPLAIN_ANSWER
   SELECT_ONE

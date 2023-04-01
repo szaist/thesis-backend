@@ -7,6 +7,8 @@ import { QuestionModule } from './question/question.module'
 import { AnswerModule } from './answer/answer.module'
 import { TestModule } from './test/test.module'
 import { PrismaModule } from './prisma/prisma.module'
+import { UpcomingtestController } from './upcomingtest/upcomingtest.controller';
+import { UpcomingtestService } from './upcomingtest/upcomingtest.service';
 
 @Module({
     imports: [
@@ -18,7 +20,7 @@ import { PrismaModule } from './prisma/prisma.module'
         TestModule,
         PrismaModule,
     ],
-    controllers: [],
-    providers: [],
+    controllers: [UpcomingtestController],
+    providers: [UpcomingtestService],
 })
 export class AppModule {}

@@ -11,13 +11,16 @@ import {
 } from '@nestjs/common'
 import { AnswerService } from './answer.service'
 import { InsertAnswerDto } from './dto'
+import { ParseIntPipe } from '@nestjs/common/pipes'
 
 @Controller('answer')
 export class AnswerController {
     constructor(private answerService: AnswerService) {}
 
-    @Get()
-    async getAnswersByQuestionId(@Param('questionId') questionId: number) {
+    @Get('/:id')
+    async getAnswersByQuestionId(
+        @Param('id', ParseIntPipe) questionId: number,
+    ) {
         return this.answerService.getAnswersById(questionId)
     }
 
@@ -29,14 +32,14 @@ export class AnswerController {
 
     @Patch('/:id')
     async updateAnswer(
-        @Param('id') answerId: number,
+        @Param('id', ParseIntPipe) answerId: number,
         @Body() dto: InsertAnswerDto,
     ) {
         return this.answerService.updateAnswer(answerId, dto)
     }
 
     @Delete('/:id')
-    async deleteAnswer(@Param('id') answerId: number) {
+    async deleteAnswer(@Param('id', ParseIntPipe) answerId: number) {
         return this.answerService.deleteAnswer(answerId)
     }
 }
