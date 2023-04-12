@@ -12,6 +12,8 @@ import { UpcomingtestService } from './upcomingtest/upcomingtest.service';
 import { CourseService } from './course/course.service';
 import { CourseController } from './course/course.controller';
 import { CourseModule } from './course/course.module';
+import { FillingTestController } from './filling-test/filling-test.controller';
+import { FillingTestModule } from './filling-test/filling-test.module';
 
 @Module({
     imports: [
@@ -23,8 +25,9 @@ import { CourseModule } from './course/course.module';
         TestModule,
         PrismaModule,
         CourseModule,
+        FillingTestModule,
     ],
-    controllers: [UpcomingtestController, CourseController],
+    controllers: [UpcomingtestController, CourseController, FillingTestController],
     providers: [UpcomingtestService, CourseService],
 })
 export class AppModule {}

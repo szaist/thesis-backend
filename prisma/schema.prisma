@@ -84,9 +84,9 @@ model TestFilled {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  startDate DateTime @default(now())
-  endDate   DateTime
-  submitted Boolean  @default(false)
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  submitted Boolean   @default(false)
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
