@@ -9,6 +9,7 @@ import { TestModule } from './test/test.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { CourseModule } from './course/course.module'
 import { FillingTestModule } from './filling-test/filling-test.module'
+import { UpcomingtestModule } from './upcomingtest/upcomingtest.module';
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { FillingTestModule } from './filling-test/filling-test.module'
         PrismaModule,
         CourseModule,
         FillingTestModule,
+        UpcomingtestModule,
     ],
 })
 export class AppModule {}
