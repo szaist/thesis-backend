@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma, UsersToUpComingTests } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { Errors } from 'src/prisma/errors'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { InsertUpcomingTestDto } from './dto'
@@ -8,31 +8,34 @@ import { InsertUpcomingTestDto } from './dto'
 export class UpcomingtestService {
     constructor(private prisma: PrismaService) {}
 
-    async getUpcomingTestByUserId(userId: number) {
+    async getUpcomingTestsByUserId(userId: number) {
         try {
-            const upcomingTestsRelation =
-                await this.prisma.usersToUpComingTests.findMany({
+            // Get user courses
+            const courses = await this.prisma.courseToUser.findMany({
+                where: {
+                    userId: userId,
+                },
+            })
+
+            // Get upcoming tests by user course ids
+
+            const upcomingTests = courses.reduce(async (result: any, curr) => {
+                const results = await result
+
+                const testByCourseId = await this.prisma.upComingTest.findMany({
                     where: {
-                        userId: userId,
+                        courseId: curr.courseId,
                     },
                 })
 
-            const upcomingTests = await upcomingTestsRelation.reduce(
-                async (arr: any, rel: UsersToUpComingTests) => {
-                    const result = await arr
-                    const { data } = await this.getUpcomingTestById(
-                        rel.upComingTestId,
-                    )
+                return [...results, ...testByCourseId]
+            }, [])
 
-                    result.push(data)
-                    return result
-                },
-                [],
-            )
-
-            return { data: upcomingTests }
+            return {
+                data: upcomingTests,
+            }
         } catch (error) {
-            console.error('getUpcomingTestByUserId: ', error)
+            console.error('getUpcomingTestsByUserId: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 throw Errors.codes[error.code]
             }
@@ -66,18 +69,6 @@ export class UpcomingtestService {
         try {
             const response = await this.prisma.upComingTest.create({
                 data: dto,
-            })
-
-            return {
-                data: response,
-            }
-        } catch (error) {}
-    }
-
-    async insertUserToUpcomingTest(upComingTestId: number, userId: number[]) {
-        try {
-            const response = await this.prisma.usersToUpComingTests.createMany({
-                data: userId.map((userId) => ({ userId, upComingTestId })),
             })
 
             return {

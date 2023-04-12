@@ -16,22 +16,17 @@ export class UpcomingtestController {
     // Getters
     @Get('/:userId')
     async getUpcomingTests(@Param('userId', ParseIntPipe) userid: number) {
-        return this.upcomingtestService.getUpcomingTestByUserId(userid)
+        return this.upcomingtestService.getUpcomingTestsByUserId(userid)
+    }
+    @Get('/course/:courseId')
+    async getUpComingTestsByCourseId(
+        @Param('courseId', ParseIntPipe) courseId: number,
+    ) {
+        return this.getUpComingTestsByCourseId(courseId)
     }
 
-    @Post('')
+    @Post()
     async insertUpcomingTest(@Body() upcomingTestId: InsertUpcomingTestDto) {
         return this.upcomingtestService.insertUpcomingTest(upcomingTestId)
-    }
-
-    @Post('/:upcomingTestId')
-    async insertUserToUpcomingPost(
-        @Param('upcomingTestId', ParseIntPipe) upcomingTestId,
-        @Body('userIds') userIds,
-    ) {
-        return this.upcomingtestService.insertUserToUpcomingTest(
-            upcomingTestId,
-            userIds,
-        )
     }
 }

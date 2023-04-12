@@ -22,10 +22,11 @@ model User {
 
   role ROLE @default(STUDENT)
 
-  Tests                Test[]
-  QuestionAnswered     QuestionAnswered[]
-  TestFilled           TestFilled[]
-  UsersToUpComingTests UsersToUpComingTests[]
+  Tests            Test[]
+  QuestionAnswered QuestionAnswered[]
+  TestFilled       TestFilled[]
+  Course           Course[]
+  CourseToUser     CourseToUser[]
 
   @@map("users")
 }
@@ -52,7 +53,7 @@ model Question {
   updatedAt DateTime @updatedAt
 
   testId Int
-  test   Test     @relation(fields: [testId], references: [id])
+  test   Test     @relation(fields: [testId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   Answer Answer[]
 
   text             String
@@ -68,7 +69,7 @@ model Answer {
   updatedAt DateTime @updatedAt
 
   questionId Int
-  question   Question @relation(fields: [questionId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   text             String
   correct          Boolean
@@ -91,7 +92,7 @@ model TestFilled {
   user   User @relation(fields: [userId], references: [id])
 
   upComingTestId Int
-  upComingTest   UpComingTest @relation(fields: [upComingTestId], references: [id])
+  upComingTest   UpComingTest @relation(fields: [upComingTestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model QuestionAnswered {
@@ -103,10 +104,10 @@ model QuestionAnswered {
   user   User @relation(fields: [userId], references: [id])
 
   questionId Int
-  question   Question @relation(fields: [questionId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   answerId Int
-  answer   Answer @relation(fields: [answerId], references: [id])
+  answer   Answer @relation(fields: [answerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model UpComingTest {
@@ -115,17 +116,36 @@ model UpComingTest {
   updatedAt DateTime @updatedAt
 
   testId Int
-  test   Test @relation(fields: [testId], references: [id])
+  test   Test @relation(fields: [testId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  startDate            DateTime
-  lastStartDate        DateTime
-  UsersToUpComingTests UsersToUpComingTests[]
-  TestFilled           TestFilled[]
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  startDate     DateTime
+  lastStartDate DateTime
+  TestFilled    TestFilled[]
 
   @@map("upcomingtests")
 }
 
-model UsersToUpComingTests {
+model Course {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  CourseToUser CourseToUser[]
+  UpComingTest UpComingTest[]
+
+  @@map("courses")
+}
+
+model CourseToUser {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -133,8 +153,8 @@ model UsersToUpComingTests {
   userId Int
   user   User @relation(fields: [userId], references: [id])
 
-  upComingTestId Int
-  upComingTest   UpComingTest @relation(fields: [upComingTestId], references: [id])
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 enum QuestionTypes {

@@ -6,6 +6,10 @@ export class InsertUpcomingTestDto {
     testId: number
 
     @IsNotEmpty()
+    @IsNumber()
+    courseId: number
+
+    @IsNotEmpty()
     @IsDateString()
     startDate: Date
 
