@@ -7,13 +7,8 @@ import { QuestionModule } from './question/question.module'
 import { AnswerModule } from './answer/answer.module'
 import { TestModule } from './test/test.module'
 import { PrismaModule } from './prisma/prisma.module'
-import { UpcomingtestController } from './upcomingtest/upcomingtest.controller';
-import { UpcomingtestService } from './upcomingtest/upcomingtest.service';
-import { CourseService } from './course/course.service';
-import { CourseController } from './course/course.controller';
-import { CourseModule } from './course/course.module';
-import { FillingTestController } from './filling-test/filling-test.controller';
-import { FillingTestModule } from './filling-test/filling-test.module';
+import { CourseModule } from './course/course.module'
+import { FillingTestModule } from './filling-test/filling-test.module'
 
 @Module({
     imports: [
@@ -27,7 +22,5 @@ import { FillingTestModule } from './filling-test/filling-test.module';
         CourseModule,
         FillingTestModule,
     ],
-    controllers: [UpcomingtestController, CourseController, FillingTestController],
-    providers: [UpcomingtestService, CourseService],
 })
 export class AppModule {}
