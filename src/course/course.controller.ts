@@ -5,8 +5,8 @@ import {
     Get,
     Param,
     ParseIntPipe,
+    Patch,
     Post,
-    Put,
 } from '@nestjs/common'
 import { CourseService } from './course.service'
 import { InsertCourseDto } from './dto'
@@ -56,7 +56,7 @@ export class CourseController {
         return this.courseService.deleteCourse(courseId)
     }
 
-    @Put('/:courseId')
+    @Patch('/:courseId')
     async updateCourse(
         @Param('courseId', ParseIntPipe) courseId,
         @Body() dto: InsertCourseDto,
