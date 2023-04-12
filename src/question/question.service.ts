@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
+import { Prisma, QuestionTypes } from '@prisma/client'
 import { Errors } from 'src/prisma/errors'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { InsertQuestionDto } from './dto'
@@ -60,9 +60,14 @@ export class QuestionService {
 
     // Insert
     async insertQuestion(dto: InsertQuestionDto) {
+        const questionTypeStrings = Object.keys(QuestionTypes)
         try {
             const response = await this.prisma.question.create({
-                data: dto,
+                data: {
+                    testId: dto.testId,
+                    text: dto.text,
+                    type: questionTypeStrings[dto.type] as QuestionTypes,
+                },
             })
 
             return {
@@ -81,13 +86,16 @@ export class QuestionService {
     // Update
     async updateQuestion(questionId: number, dto: InsertQuestionDto) {
         try {
+            const questionTypeStrings = Object.keys(QuestionTypes)
             const updatedQuestion = await this.prisma.question.update({
                 where: {
                     id: questionId,
                 },
-                data: dto,
+                data: {
+                    ...dto,
+                    type: questionTypeStrings[dto.type] as QuestionTypes,
+                },
             })
-
             return {
                 data: updatedQuestion,
             }

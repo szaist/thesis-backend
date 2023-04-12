@@ -22,7 +22,7 @@ export class UpcomingtestController {
     async getUpComingTestsByCourseId(
         @Param('courseId', ParseIntPipe) courseId: number,
     ) {
-        return this.getUpComingTestsByCourseId(courseId)
+        return this.upcomingtestService.getUpcomingTestsByCourseId(courseId)
     }
 
     @Post()

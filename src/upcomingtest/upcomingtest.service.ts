@@ -17,8 +17,6 @@ export class UpcomingtestService {
                 },
             })
 
-            // Get upcoming tests by user course ids
-
             const upcomingTests = courses.reduce(async (result: any, curr) => {
                 const results = await result
 
@@ -27,9 +25,10 @@ export class UpcomingtestService {
                         courseId: curr.courseId,
                     },
                 })
+                results[curr.courseId] = testByCourseId
 
-                return [...results, ...testByCourseId]
-            }, [])
+                return results
+            }, {})
 
             return {
                 data: upcomingTests,
@@ -42,6 +41,20 @@ export class UpcomingtestService {
 
             throw error
         }
+    }
+
+    async getUpcomingTestsByCourseId(courseId: number) {
+        try {
+            const upcomingTests = this.prisma.upComingTest.findMany({
+                where: {
+                    courseId: courseId,
+                },
+            })
+
+            return {
+                data: upcomingTests,
+            }
+        } catch (error) {}
     }
 
     async getUpcomingTestById(id: number) {

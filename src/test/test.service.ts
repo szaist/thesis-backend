@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { Prisma, Question } from '@prisma/client'
 import { Errors } from 'src/prisma/errors'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { InsertTestDto } from './dto'
+import { InsertTestDto, UpdateTestDto } from './dto'
 
 @Injectable()
 export class TestService {
@@ -112,7 +112,7 @@ export class TestService {
     }
 
     //Patch
-    async updateTest(testId: number, dto: InsertTestDto) {
+    async updateTest(testId: number, dto: UpdateTestDto) {
         try {
             const response = await this.prisma.test.update({
                 where: {

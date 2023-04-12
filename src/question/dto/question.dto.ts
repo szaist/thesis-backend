@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator'
+import { IsNotEmpty, IsString, IsNumber, IsEnum } from 'class-validator'
+import { QuestionTypes } from 'src/enums'
 
 export class InsertQuestionDto {
     @IsNumber()
@@ -8,4 +9,7 @@ export class InsertQuestionDto {
     @IsString()
     @IsNotEmpty()
     text: string
+
+    @IsEnum(QuestionTypes)
+    type: QuestionTypes
 }

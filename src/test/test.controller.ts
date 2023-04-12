@@ -8,7 +8,7 @@ import {
     Post,
 } from '@nestjs/common'
 import { ParseIntPipe } from '@nestjs/common/pipes'
-import { InsertTestDto } from './dto'
+import { InsertTestDto, UpdateTestDto } from './dto'
 import { TestService } from './test.service'
 
 @Controller('test')
@@ -38,7 +38,7 @@ export class TestController {
     @Patch('/:id')
     async updateTest(
         @Param('id', ParseIntPipe) testId,
-        @Body() dto: InsertTestDto,
+        @Body() dto: UpdateTestDto,
     ) {
         return this.testService.updateTest(testId, dto)
     }

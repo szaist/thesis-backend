@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class InsertTestDto {
     @IsNotEmpty()
@@ -10,5 +10,16 @@ export class InsertTestDto {
     title: string
 
     @IsString()
+    @IsOptional()
+    description: string
+}
+
+export class UpdateTestDto {
+    @IsNotEmpty()
+    @IsString()
+    title: string
+
+    @IsString()
+    @IsOptional()
     description: string
 }
