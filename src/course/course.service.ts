@@ -16,6 +16,19 @@ export class CourseService {
         } catch (error) {}
     }
 
+    async getCourseById(courseId: number) {
+        try {
+            const course = await this.prisma.course.findFirstOrThrow({
+                where: {
+                    id: courseId,
+                },
+            })
+            return {
+                data: course,
+            }
+        } catch (error) {}
+    }
+
     async getOwnedCourses(ownerId: number) {
         try {
             const owned = await this.prisma.course.findMany({
@@ -72,9 +85,13 @@ export class CourseService {
 
     async insertCourse(dto: InsertCourseDto) {
         try {
-            await this.prisma.course.create({
+            const response = await this.prisma.course.create({
                 data: dto,
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {}
     }
 

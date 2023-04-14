@@ -11,6 +11,10 @@ export class AnswerQuestion {
 
     @IsNotEmpty()
     @IsNumber()
+    upcomingTestId: number
+
+    @IsNotEmpty()
+    @IsNumber()
     answerId: number
 }
 

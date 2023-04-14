@@ -99,6 +99,9 @@ model QuestionAnswered {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  upcomingTestId Int
+  upcomingTest   UpComingTest @relation(fields: [upcomingTestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   userId Int
   user   User @relation(fields: [userId], references: [id])
 
@@ -120,9 +123,10 @@ model UpComingTest {
   courseId Int
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  startDate     DateTime
-  lastStartDate DateTime
-  TestFilled    TestFilled[]
+  startDate        DateTime
+  lastStartDate    DateTime
+  TestFilled       TestFilled[]
+  QuestionAnswered QuestionAnswered[]
 
   @@map("upcomingtests")
 }

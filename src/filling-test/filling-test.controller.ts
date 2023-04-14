@@ -1,10 +1,22 @@
-import { Body, Controller, Param, ParseIntPipe, Post } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Post,
+} from '@nestjs/common'
 import { FillingTestService } from './filling-test.service'
 import { AnswerQuestion, StartDto } from './dto'
 
 @Controller('fill')
 export class FillingTestController {
     constructor(private fillingTestService: FillingTestService) {}
+
+    @Get('/test-results/:userId')
+    async getAllTestResult(@Param('userId', ParseIntPipe) userId: number) {
+        return this.fillingTestService.getTestAllResult(userId)
+    }
 
     @Post('/answer')
     async answerQuestion(@Body() dto: AnswerQuestion) {

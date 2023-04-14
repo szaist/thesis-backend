@@ -18,4 +18,12 @@ export class UserController {
     async getAllUser() {
         return await this.prisma.user.findMany({})
     }
+    @Get('/students')
+    async getStudents() {
+        return await this.prisma.user.findMany({
+            where: {
+                role: 'STUDENT',
+            },
+        })
+    }
 }

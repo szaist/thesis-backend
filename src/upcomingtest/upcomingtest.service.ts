@@ -37,7 +37,10 @@ export class UpcomingtestService {
                                 },
                             })
 
-                            r.push({ ...curr, ...testData })
+                            r.push({
+                                ...testData,
+                                ...curr,
+                            })
 
                             return r
                         },
