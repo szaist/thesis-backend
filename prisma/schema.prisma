@@ -72,7 +72,6 @@ model Answer {
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   text             String
-  correct          Boolean
   point            Float              @default(0)
   QuestionAnswered QuestionAnswered[]
 
@@ -158,10 +157,8 @@ model CourseToUser {
 }
 
 enum QuestionTypes {
-  SIMPLE_ANSWER
-  EXPLAIN_ANSWER
-  CHECKBOX
   SELECT_ONE
+  SELECT_MORE
 }
 
 enum ROLE {

@@ -29,8 +29,10 @@ export class AnswerService {
     //Insert
     async insertAnswer(dto: InsertAnswerDto) {
         try {
-            const response = await this.prisma.answer.create({
-                data: dto,
+            const response = await this.prisma.answer.upsert({
+                where: { id: dto?.id ? dto.id : -1 },
+                update: dto,
+                create: dto,
             })
             return { data: response }
         } catch (error) {

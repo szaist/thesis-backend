@@ -17,18 +17,39 @@ export class UpcomingtestService {
                 },
             })
 
-            const upcomingTests = courses.reduce(async (result: any, curr) => {
-                const results = await result
+            const upcomingTests = await courses.reduce(
+                async (result: any, curr) => {
+                    const results = await result
 
-                const testByCourseId = await this.prisma.upComingTest.findMany({
-                    where: {
-                        courseId: curr.courseId,
-                    },
-                })
-                results[curr.courseId] = testByCourseId
+                    const testByCourseId =
+                        await this.prisma.upComingTest.findMany({
+                            where: {
+                                courseId: curr.courseId,
+                            },
+                        })
 
-                return results
-            }, {})
+                    const detailedTest = await testByCourseId.reduce(
+                        async (result: any, curr) => {
+                            const r = await result
+                            const testData = await this.prisma.test.findFirst({
+                                where: {
+                                    id: curr.testId,
+                                },
+                            })
+
+                            r.push({ ...curr, ...testData })
+
+                            return r
+                        },
+                        [],
+                    )
+
+                    results[curr.courseId] = detailedTest
+
+                    return results
+                },
+                {},
+            )
 
             return {
                 data: upcomingTests,
@@ -45,7 +66,7 @@ export class UpcomingtestService {
 
     async getUpcomingTestsByCourseId(courseId: number) {
         try {
-            const upcomingTests = this.prisma.upComingTest.findMany({
+            const upcomingTests = await this.prisma.upComingTest.findMany({
                 where: {
                     courseId: courseId,
                 },

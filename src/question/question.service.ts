@@ -62,8 +62,13 @@ export class QuestionService {
     async insertQuestion(dto: InsertQuestionDto) {
         const questionTypeStrings = Object.keys(QuestionTypes)
         try {
-            const response = await this.prisma.question.create({
-                data: {
+            const response = await this.prisma.question.upsert({
+                where: { id: dto.id < 0 ? -1 : dto.id },
+                update: {
+                    ...dto,
+                    type: questionTypeStrings[dto.type] as QuestionTypes,
+                },
+                create: {
                     testId: dto.testId,
                     text: dto.text,
                     type: questionTypeStrings[dto.type] as QuestionTypes,

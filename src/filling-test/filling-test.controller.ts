@@ -16,7 +16,7 @@ export class FillingTestController {
         return this.fillingTestService.startTest(dto)
     }
 
-    @Post('/end-test')
+    @Post('/end-test/:testId')
     async endTest(@Param('testId', ParseIntPipe) testId: number) {
         return this.fillingTestService.endTest(testId)
     }
