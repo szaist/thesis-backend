@@ -16,6 +16,37 @@ export class CourseService {
         } catch (error) {}
     }
 
+    async getUsersInCourse(courseId: number) {
+        try {
+            const connections = await this.prisma.courseToUser.findMany({
+                where: {
+                    courseId: courseId,
+                },
+            })
+
+            const users = await connections.reduce(
+                async (results: any, curr) => {
+                    const res = await results
+
+                    const user = await this.prisma.user.findUnique({
+                        where: {
+                            id: curr.userId,
+                        },
+                    })
+
+                    res.push(user)
+
+                    return res
+                },
+                [],
+            )
+
+            return {
+                data: users,
+            }
+        } catch (error) {}
+    }
+
     async getCourseById(courseId: number) {
         try {
             const course = await this.prisma.course.findFirstOrThrow({

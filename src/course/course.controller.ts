@@ -30,6 +30,11 @@ export class CourseController {
         return this.courseService.getCourseById(courseId)
     }
 
+    @Get('/user/in/:courseId')
+    async userInCourse(@Param('courseId', ParseIntPipe) courseId: number) {
+        return this.courseService.getUsersInCourse(courseId)
+    }
+
     @Get('/user/:userId')
     async getUserCourses(@Param('userId', ParseIntPipe) userId: number) {
         return this.courseService.getUserCourses(userId)

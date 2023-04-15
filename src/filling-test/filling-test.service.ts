@@ -14,9 +14,13 @@ export class FillingTestService {
 
     async startTest(dto: StartDto) {
         try {
-            await this.prisma.testFilled.create({
+            const response = await this.prisma.testFilled.create({
                 data: dto,
             })
+
+            return {
+                data: response,
+            }
         } catch (error) {}
     }
 
@@ -27,29 +31,11 @@ export class FillingTestService {
                 where: { id: filledTestId },
                 data: {
                     endDate: date,
+                    submitted: true,
                 },
             })
         } catch (error) {}
     }
-
-    /*
-
-    [{   
-        title: ...
-        testId: ...
-
-        questions: [{
-            questionId: ...,
-            text: ...,
-
-        }, ...]
-        answers: [{
-            answerId: ...,
-            text: ...,
-        }]
-    }]
-
-    */
 
     async getTestAllResult(userId: number) {
         // Minden teszt amit kitöltött a user
@@ -120,12 +106,6 @@ export class FillingTestService {
                                 },
                             })
 
-                        const allAnswer = await this.prisma.answer.findMany({
-                            where: {
-                                questionId: questionA.questionId,
-                            },
-                        })
-
                         r1a.push({
                             question,
                             selectedAnswer,
@@ -134,15 +114,40 @@ export class FillingTestService {
                     },
                     [],
                 )
-                res[upcomingTest.id] = {
+
+                const countedIds = []
+                const maxPoint = await questionAnswered.reduce(
+                    async (point: any, curr) => {
+                        let p = await point
+
+                        const allAnswer = await this.prisma.answer.findMany({
+                            where: {
+                                questionId: curr.questionId,
+                            },
+                        })
+
+                        allAnswer.forEach((answer) => {
+                            if (countedIds.includes(answer.id)) return
+
+                            p += answer.point
+                            countedIds.push(answer.id)
+                        })
+
+                        return p
+                    },
+                    0,
+                )
+
+                res.push({
                     test,
                     filledTest,
                     upcomingTest,
                     answersAndQuestions,
-                }
+                    maxPoint,
+                })
                 return res
             },
-            {},
+            [],
         )
         console.log(data)
         //Kérdésekhez lekérjük mi volt a kérdés, és mi volt a válasz rá
