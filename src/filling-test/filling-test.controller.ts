@@ -18,6 +18,13 @@ export class FillingTestController {
         return this.fillingTestService.getTestAllResult(userId)
     }
 
+    @Get('/users/upcomingtest/:upcomingTestId')
+    async getUsersWhoFilledTheTest(
+        @Param('upcomingTestId', ParseIntPipe) upcomingTestId: number,
+    ) {
+        return this.fillingTestService.getWhoFilledTheTest(upcomingTestId)
+    }
+
     @Post('/answer')
     async answerQuestion(@Body() dto: AnswerQuestion) {
         return this.fillingTestService.answerQuestion(dto)

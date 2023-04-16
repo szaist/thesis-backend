@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { InsertCourseDto, InsertUserToCourse } from './dto'
+import { InsertCourseDto } from './dto'
+import { Errors } from 'src/prisma/errors'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class CourseService {
@@ -13,7 +15,13 @@ export class CourseService {
             return {
                 data: courses,
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error('getCourses', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async getUsersInCourse(courseId: number) {
@@ -32,6 +40,13 @@ export class CourseService {
                         where: {
                             id: curr.userId,
                         },
+                        select: {
+                            email: true,
+                            firstName: true,
+                            lastName: true,
+                            id: true,
+                            role: true,
+                        },
                     })
 
                     res.push(user)
@@ -44,7 +59,13 @@ export class CourseService {
             return {
                 data: users,
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error('getUsersInCourse', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async getCourseById(courseId: number) {
@@ -57,7 +78,13 @@ export class CourseService {
             return {
                 data: course,
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error('getCourseById', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async getOwnedCourses(ownerId: number) {
@@ -71,7 +98,13 @@ export class CourseService {
             return {
                 data: owned,
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error('getOwnedCourses', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async getUserCourses(userId: number) {
@@ -90,7 +123,13 @@ export class CourseService {
             })
 
             return { data: userCourses }
-        } catch (error) {}
+        } catch (error) {
+            console.error('getUserCourses', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async addUserToCourse(courseId: number, userId: number) {
@@ -101,7 +140,13 @@ export class CourseService {
                     courseId,
                 },
             })
-        } catch (error) {}
+        } catch (error) {
+            console.error('addUserToCourse', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
     async deleteUserFromCourse(courseId: number, userId: number) {
         try {
@@ -111,7 +156,13 @@ export class CourseService {
                     courseId: courseId,
                 },
             })
-        } catch (error) {}
+        } catch (error) {
+            console.error('deleteUserFromCourse', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async insertCourse(dto: InsertCourseDto) {
@@ -123,7 +174,13 @@ export class CourseService {
             return {
                 data: response,
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error('insertCourse', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async deleteCourse(courseId: number) {
@@ -133,7 +190,13 @@ export class CourseService {
                     id: courseId,
                 },
             })
-        } catch (error) {}
+        } catch (error) {
+            console.error('deleteCourse', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 
     async updateCourse(courseId: number, dto: InsertCourseDto) {
@@ -144,6 +207,12 @@ export class CourseService {
                 },
                 data: dto,
             })
-        } catch (error) {}
+        } catch (error) {
+            console.error('updateCourse', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
     }
 }

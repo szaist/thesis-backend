@@ -78,7 +78,14 @@ export class UpcomingtestService {
             return {
                 data: upcomingTests,
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error('getUpcomingTestsByCourseId: ', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+
+            throw error
+        }
     }
 
     async getUpcomingTestById(id: number) {
@@ -111,6 +118,11 @@ export class UpcomingtestService {
             return {
                 data: response,
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error('insertUpcomingTest: ', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+        }
     }
 }
