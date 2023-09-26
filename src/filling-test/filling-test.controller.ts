@@ -5,10 +5,16 @@ import {
     Param,
     ParseIntPipe,
     Post,
+    UseGuards,
 } from '@nestjs/common'
 import { FillingTestService } from './filling-test.service'
 import { AnswerQuestion, StartDto } from './dto'
+import { RolesGuard } from 'src/auth/guard'
+import { Roles } from 'src/auth/decorator/roles.decorator'
+import { ROLE } from '@prisma/client'
 
+@UseGuards(RolesGuard)
+@Roles(ROLE.TEACHER, ROLE.STUDENT)
 @Controller('fill')
 export class FillingTestController {
     constructor(private fillingTestService: FillingTestService) {}

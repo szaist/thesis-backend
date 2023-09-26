@@ -5,18 +5,25 @@ import {
     Param,
     ParseIntPipe,
     Post,
+    Req,
+    UseGuards,
 } from '@nestjs/common'
 import { InsertUpcomingTestDto } from './dto'
 import { UpcomingtestService } from './upcomingtest.service'
+import { RolesGuard } from 'src/auth/guard/roles.guard'
+import { Roles } from 'src/auth/decorator/roles.decorator'
+import { ROLE, User } from '@prisma/client'
+import { GetUser } from 'src/auth/decorator'
 
+@UseGuards(RolesGuard)
+@Roles(ROLE.TEACHER, ROLE.STUDENT)
 @Controller('upcomingtest')
 export class UpcomingtestController {
     constructor(private upcomingtestService: UpcomingtestService) {}
 
-    // Getters
-    @Get('/user/:userId')
-    async getUpcomingTests(@Param('userId', ParseIntPipe) userid: number) {
-        return this.upcomingtestService.getUpcomingTestsByUserId(userid)
+    @Get()
+    async getUpcomingTests(@GetUser() user: User) {
+        return this.upcomingtestService.getUpcomingTestsByUserId(user.id)
     }
 
     @Get('/:upcomingTestId')
@@ -33,8 +40,12 @@ export class UpcomingtestController {
         return this.upcomingtestService.getUpcomingTestsByCourseId(courseId)
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER)
     @Post()
     async insertUpcomingTest(@Body() upcomingTestId: InsertUpcomingTestDto) {
         return this.upcomingtestService.insertUpcomingTest(upcomingTestId)
     }
+
+    // TODO: Delete upcomingTest implementation
 }

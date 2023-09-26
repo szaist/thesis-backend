@@ -1,29 +1,25 @@
 import { Controller, Get, UseGuards } from '@nestjs/common'
 import { GetUser } from 'src/auth/decorator'
 import { JwtGuard } from 'src/auth/guard'
-import { User } from '@prisma/client'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { ROLE, User } from '@prisma/client'
+import { UserService } from './user.service'
 
 @Controller('users')
 export class UserController {
-    constructor(private prisma: PrismaService) {}
+    constructor(private userService:UserService) {}
 
     @UseGuards(JwtGuard)
-    @Get('me')
+    @Get('/me')
     getMe(@GetUser() user: User) {
         return user
     }
 
     @Get()
     async getAllUser() {
-        return await this.prisma.user.findMany({})
+        return await this.userService.getAll()
     }
     @Get('/students')
     async getStudents() {
-        return await this.prisma.user.findMany({
-            where: {
-                role: 'STUDENT',
-            },
-        })
+        return await this.userService.getByRole(ROLE.STUDENT)
     }
 }
