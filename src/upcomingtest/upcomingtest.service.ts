@@ -126,7 +126,7 @@ export class UpcomingtestService {
         }
     }
 
-    async deleteUpcomingTest(){
+    async deleteUpcomingTest() {
         // TODO: Delete upcoming test service function implementation
     }
 }

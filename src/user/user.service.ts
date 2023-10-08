@@ -1,24 +1,24 @@
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from 'src/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
-import { Errors } from "src/prisma/errors";
-import { Prisma, ROLE } from "@prisma/client";
+import { Errors } from 'src/prisma/errors'
+import { Prisma, ROLE } from '@prisma/client'
 
 @Injectable()
 export class UserService {
-    constructor(private prisma: PrismaService){}
+    constructor(private prisma: PrismaService) {}
 
     async findById(userId: number) {
         try {
             const user = await this.prisma.user.findFirst({
                 where: {
-                    id: userId
-                }
+                    id: userId,
+                },
             })
 
-            return {data: user}
+            return { data: user }
         } catch (error) {
             console.error('findById', error)
-            if(error instanceof Prisma.PrismaClientKnownRequestError){
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 throw Errors.codes[error.code]
             }
 
@@ -26,13 +26,13 @@ export class UserService {
         }
     }
 
-    async getAll(){
+    async getAll() {
         try {
             const users = await this.prisma.user.findMany()
 
-            return {data: users}
+            return { data: users }
         } catch (error) {
-            if(error instanceof Prisma.PrismaClientKnownRequestError){
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 throw Errors.codes[error.code]
             }
 
@@ -40,17 +40,17 @@ export class UserService {
         }
     }
 
-    async getByRole(role: ROLE){
+    async getByRole(role: ROLE) {
         try {
             const users = await this.prisma.user.findMany({
                 where: {
                     role: ROLE[role],
-                }
+                },
             })
 
             return users
         } catch (error) {
-            if(error instanceof Prisma.PrismaClientKnownRequestError){
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 throw Errors.codes[error.code]
             }
 

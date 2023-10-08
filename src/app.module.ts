@@ -9,7 +9,7 @@ import { TestModule } from './test/test.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { CourseModule } from './course/course.module'
 import { FillingTestModule } from './filling-test/filling-test.module'
-import { UpcomingtestModule } from './upcomingtest/upcomingtest.module';
+import { UpcomingtestModule } from './upcomingtest/upcomingtest.module'
 import { UserService } from './user/user.service'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtGuard } from './auth/guard'
@@ -27,9 +27,6 @@ import { JwtGuard } from './auth/guard'
         FillingTestModule,
         UpcomingtestModule,
     ],
-    providers: [
-        UserService,
-        { provide: APP_GUARD, useClass: JwtGuard }
-    ]
+    providers: [UserService, { provide: APP_GUARD, useClass: JwtGuard }],
 })
 export class AppModule {}

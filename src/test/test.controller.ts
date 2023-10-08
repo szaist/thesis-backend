@@ -28,7 +28,7 @@ export class TestController {
     }
 
     @Get('/owned')
-    async getTestByOwnerId(@GetUser() user : User) {
+    async getTestByOwnerId(@GetUser() user: User) {
         return this.testService.getTestsByOwnerId(user.id)
     }
 

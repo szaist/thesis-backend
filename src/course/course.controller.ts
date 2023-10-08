@@ -44,7 +44,7 @@ export class CourseController {
         return this.courseService.getUsersInCourse(courseId)
     }
 
-
+    // ? Nem biztos hogy szükség van rá
     @Get('/user/:userId')
     async getUserCourses(@Param('userId', ParseIntPipe) userId: number) {
         return this.courseService.getUserCourses(userId)
