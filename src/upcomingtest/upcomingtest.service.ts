@@ -67,6 +67,16 @@ export class UpcomingtestService {
         }
     }
 
+    async getUpcomingTestByOwnerId(ownerId: number) {
+        try {
+            return await this.prisma.upComingTest.findMany({
+                where: {
+                    ownerId: ownerId,
+                },
+            })
+        } catch (error) {}
+    }
+
     async getUpcomingTestsByCourseId(courseId: number) {
         try {
             const upcomingTests = await this.prisma.upComingTest.findMany({
@@ -109,10 +119,10 @@ export class UpcomingtestService {
         }
     }
 
-    async insertUpcomingTest(dto: InsertUpcomingTestDto) {
+    async insertUpcomingTest(dto: InsertUpcomingTestDto, ownerId: number) {
         try {
             const response = await this.prisma.upComingTest.create({
-                data: dto,
+                data: { ...dto, ownerId },
             })
 
             return {
@@ -126,7 +136,13 @@ export class UpcomingtestService {
         }
     }
 
-    async deleteUpcomingTest() {
-        // TODO: Delete upcoming test service function implementation
+    async deleteUpcomingTest(upcomingTestId: number) {
+        try {
+            await this.prisma.upComingTest.delete({
+                where: {
+                    id: upcomingTestId,
+                },
+            })
+        } catch (error) {}
     }
 }

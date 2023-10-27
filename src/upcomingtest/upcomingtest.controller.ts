@@ -1,11 +1,11 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     ParseIntPipe,
     Post,
-    Req,
     UseGuards,
 } from '@nestjs/common'
 import { InsertUpcomingTestDto } from './dto'
@@ -15,17 +15,26 @@ import { Roles } from 'src/auth/decorator/roles.decorator'
 import { ROLE, User } from '@prisma/client'
 import { GetUser } from 'src/auth/decorator'
 
-@UseGuards(RolesGuard)
-@Roles(ROLE.TEACHER, ROLE.STUDENT)
 @Controller('upcomingtest')
 export class UpcomingtestController {
     constructor(private upcomingtestService: UpcomingtestService) {}
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT, ROLE.TEACHER)
     @Get()
     async getUpcomingTests(@GetUser() user: User) {
         return this.upcomingtestService.getUpcomingTestsByUserId(user.id)
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER)
+    @Get('/owned')
+    async getUpcomingTestsByOwnerId(@GetUser() user: User) {
+        return this.upcomingtestService.getUpcomingTestByOwnerId(user.id)
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER, ROLE.STUDENT)
     @Get('/:upcomingTestId')
     async getUpcomingTestById(
         @Param('upcomingTestId', ParseIntPipe) upcomingTestId: number,
@@ -33,6 +42,8 @@ export class UpcomingtestController {
         return this.upcomingtestService.getUpcomingTestById(upcomingTestId)
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER, ROLE.STUDENT)
     @Get('/course/:courseId')
     async getUpComingTestsByCourseId(
         @Param('courseId', ParseIntPipe) courseId: number,
@@ -43,9 +54,22 @@ export class UpcomingtestController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Post()
-    async insertUpcomingTest(@Body() upcomingTestId: InsertUpcomingTestDto) {
-        return this.upcomingtestService.insertUpcomingTest(upcomingTestId)
+    async insertUpcomingTest(
+        @Body() upcomingTestId: InsertUpcomingTestDto,
+        @GetUser() user: User,
+    ) {
+        return this.upcomingtestService.insertUpcomingTest(
+            upcomingTestId,
+            user.id,
+        )
     }
 
-    // TODO: Delete upcomingTest implementation
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER)
+    @Delete('/:id')
+    async deleteUpcomingTest(
+        @Param('id', ParseIntPipe) upcomingTestId: number,
+    ) {
+        return this.upcomingtestService.deleteUpcomingTest(upcomingTestId)
+    }
 }

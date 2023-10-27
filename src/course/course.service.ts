@@ -12,9 +12,7 @@ export class CourseService {
         try {
             const courses = await this.prisma.course.findMany({})
 
-            return {
-                data: courses,
-            }
+            return courses
         } catch (error) {
             console.error('getCourses', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -56,9 +54,7 @@ export class CourseService {
                 [],
             )
 
-            return {
-                data: users,
-            }
+            return users
         } catch (error) {
             console.error('getUsersInCourse', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -75,9 +71,7 @@ export class CourseService {
                     id: courseId,
                 },
             })
-            return {
-                data: course,
-            }
+            return course
         } catch (error) {
             console.error('getCourseById', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -95,9 +89,7 @@ export class CourseService {
                 },
             })
 
-            return {
-                data: owned,
-            }
+            return owned
         } catch (error) {
             console.error('getOwnedCourses', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -122,7 +114,9 @@ export class CourseService {
                 return courses.find((c) => con.courseId === c.id)
             })
 
-            return { data: userCourses }
+            console.log(userCourses)
+
+            return userCourses
         } catch (error) {
             console.error('getUserCourses', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -165,15 +159,13 @@ export class CourseService {
         }
     }
 
-    async insertCourse(dto: InsertCourseDto) {
+    async insertCourse(dto: InsertCourseDto, ownerId: number) {
         try {
             const response = await this.prisma.course.create({
-                data: dto,
+                data: { ...dto, ownerId },
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('insertCourse', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -201,7 +193,7 @@ export class CourseService {
 
     async updateCourse(courseId: number, dto: InsertCourseDto) {
         try {
-            await this.prisma.course.update({
+            return await this.prisma.course.update({
                 where: {
                     id: courseId,
                 },

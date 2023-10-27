@@ -75,9 +75,7 @@ export class QuestionService {
                 },
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('insertQuestion', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -101,9 +99,7 @@ export class QuestionService {
                     type: questionTypeStrings[dto.type] as QuestionTypes,
                 },
             })
-            return {
-                data: updatedQuestion,
-            }
+            return updatedQuestion
         } catch (error) {
             console.error('updateQuestion: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -122,9 +118,7 @@ export class QuestionService {
                 },
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('deleteQuestion: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

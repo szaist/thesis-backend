@@ -5,9 +5,6 @@ export class InsertCourseDto {
     @IsString()
     name: string
 
-    @IsNumber()
-    ownerId: number
-
     @IsOptional()
     description: string
 }

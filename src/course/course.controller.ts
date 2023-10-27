@@ -16,12 +16,12 @@ import { Roles } from 'src/auth/decorator/roles.decorator'
 import { ROLE, User } from '@prisma/client'
 import { GetUser } from 'src/auth/decorator'
 
-@UseGuards(RolesGuard)
-@Roles(ROLE.TEACHER, ROLE.STUDENT)
 @Controller('course')
 export class CourseController {
     constructor(private courseService: CourseService) {}
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER, ROLE.STUDENT)
     @Get()
     async getCourses() {
         return this.courseService.getCourses()
@@ -34,20 +34,25 @@ export class CourseController {
         return this.courseService.getOwnedCourses(user.id)
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER, ROLE.STUDENT)
+    @Get('/connected')
+    async getUserCourses(@GetUser() user: User) {
+        return this.courseService.getUserCourses(user.id)
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER, ROLE.STUDENT)
     @Get('/:courseId')
     async getCourseById(@Param('courseId', ParseIntPipe) courseId: number) {
         return this.courseService.getCourseById(courseId)
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER, ROLE.STUDENT)
     @Get('/user/in/:courseId')
     async userInCourse(@Param('courseId', ParseIntPipe) courseId: number) {
         return this.courseService.getUsersInCourse(courseId)
-    }
-
-    // ? Nem biztos hogy szükség van rá
-    @Get('/user/:userId')
-    async getUserCourses(@Param('userId', ParseIntPipe) userId: number) {
-        return this.courseService.getUserCourses(userId)
     }
 
     @UseGuards(RolesGuard)
@@ -60,6 +65,8 @@ export class CourseController {
         return this.courseService.addUserToCourse(courseId, userId)
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER)
     @Delete('/:courseId/user/:userId')
     async deleteUserFromCourse(
         @Param('courseId', ParseIntPipe) courseId: number,
@@ -71,8 +78,8 @@ export class CourseController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Post()
-    async insertCourse(@Body() dto: InsertCourseDto) {
-        return this.courseService.insertCourse(dto)
+    async insertCourse(@Body() dto: InsertCourseDto, @GetUser() user: User) {
+        return this.courseService.insertCourse(dto, user.id)
     }
 
     @UseGuards(RolesGuard)

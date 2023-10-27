@@ -18,6 +18,7 @@ export class UserController {
     async getAllUser() {
         return await this.userService.getAll()
     }
+
     @Get('/students')
     async getStudents() {
         return await this.userService.getByRole(ROLE.STUDENT)

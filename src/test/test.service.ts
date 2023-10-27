@@ -42,9 +42,7 @@ export class TestService {
                 [],
             )
 
-            return {
-                data: { test: { ...test, questions: questionsWithAnswers } },
-            }
+            return { ...test, questions: questionsWithAnswers }
         } catch (error) {
             console.error('getTestById: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -63,9 +61,46 @@ export class TestService {
                 },
             })
 
-            return { data: tests }
+            return tests
         } catch (error) {
             console.error('getTestsByOwnerId: ', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+
+            throw error
+        }
+    }
+
+    async getTestsByCourseId(courseId: number) {
+        try {
+            const testIds = await this.prisma.upComingTest.findMany({
+                where: {
+                    courseId,
+                },
+                select: {
+                    testId: true,
+                },
+            })
+
+            const tests = await testIds.reduce(
+                async (currentTests: any, currentId) => {
+                    const result = await currentTests
+
+                    const test = await this.prisma.test.findFirst({
+                        where: { id: currentId.testId },
+                    })
+
+                    result.push(test)
+
+                    return result
+                },
+                [],
+            )
+
+            return tests
+        } catch (error) {
+            console.error('getTestsByCourseId: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 throw Errors.codes[error.code]
             }
@@ -78,9 +113,7 @@ export class TestService {
         try {
             const tests = await this.prisma.test.findMany({})
 
-            return {
-                data: tests,
-            }
+            return tests
         } catch (error) {
             console.error('GetAllTests: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -92,10 +125,10 @@ export class TestService {
     }
 
     // Insert
-    async insertTest(dto: InsertTestDto) {
+    async insertTest(dto: InsertTestDto, ownerId: number) {
         try {
             const createdTest = await this.prisma.test.create({
-                data: dto,
+                data: { ...dto, ownerId },
             })
 
             return {
@@ -121,9 +154,7 @@ export class TestService {
                 data: dto,
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('updateTest: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -141,9 +172,7 @@ export class TestService {
                 },
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.log('deleteTest: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

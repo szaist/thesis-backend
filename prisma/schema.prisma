@@ -27,6 +27,7 @@ model User {
   TestFilled       TestFilled[]
   Course           Course[]
   CourseToUser     CourseToUser[]
+  UpComingTest     UpComingTest[]
 
   @@map("users")
 }
@@ -122,6 +123,9 @@ model UpComingTest {
 
   courseId Int
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   startDate        DateTime
   lastStartDate    DateTime

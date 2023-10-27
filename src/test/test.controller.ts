@@ -16,22 +16,33 @@ import { ROLE, User } from '@prisma/client'
 import { RolesGuard } from 'src/auth/guard'
 import { Roles } from 'src/auth/decorator/roles.decorator'
 
-@UseGuards(RolesGuard)
-@Roles(ROLE.STUDENT, ROLE.TEACHER)
 @Controller('test')
 export class TestController {
     constructor(private testService: TestService) {}
 
-    @Get('/:id')
-    async getTestById(@Param('id', ParseIntPipe) testId: number) {
-        return this.testService.getTestById(testId)
-    }
-
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER, ROLE.TEACHER)
     @Get('/owned')
     async getTestByOwnerId(@GetUser() user: User) {
         return this.testService.getTestsByOwnerId(user.id)
     }
 
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT, ROLE.TEACHER)
+    @Get('/:id')
+    async getTestById(@Param('id', ParseIntPipe) testId: number) {
+        return this.testService.getTestById(testId)
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT, ROLE.TEACHER)
+    @Get('/course/:courseId')
+    async getTestByCourseId(@Param('courseId', ParseIntPipe) courseId: number) {
+        return this.testService.getTestsByCourseId(courseId)
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT, ROLE.TEACHER)
     @Get()
     async getAllTest() {
         return this.testService.getAllTest()
@@ -40,8 +51,8 @@ export class TestController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Post()
-    async insertTest(@Body() dto: InsertTestDto) {
-        return this.testService.insertTest(dto)
+    async insertTest(@Body() dto: InsertTestDto, @GetUser() user: User) {
+        return this.testService.insertTest(dto, user.id)
     }
 
     @UseGuards(RolesGuard)

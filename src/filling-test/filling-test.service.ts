@@ -8,9 +8,11 @@ import { Prisma } from '@prisma/client'
 export class FillingTestService {
     constructor(private prisma: PrismaService) {}
 
-    async answerQuestion(dto: AnswerQuestion) {
+    async answerQuestion(dto: AnswerQuestion, userId: number) {
         try {
-            await this.prisma.questionAnswered.create({ data: dto })
+            await this.prisma.questionAnswered.create({
+                data: { ...dto, userId },
+            })
         } catch (error) {
             console.error('answerQuestion', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -20,15 +22,13 @@ export class FillingTestService {
         }
     }
 
-    async startTest(dto: StartDto) {
+    async startTest(dto: StartDto, userId: number) {
         try {
             const response = await this.prisma.testFilled.create({
-                data: dto,
+                data: { ...dto, userId },
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('startTest', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -91,9 +91,7 @@ export class FillingTestService {
                 new Set(),
             )
 
-            return {
-                data: Array.from(users),
-            }
+            return Array.from(users)
         } catch (error) {
             console.error('getWhoFilledTheTest', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -221,9 +219,7 @@ export class FillingTestService {
                 [],
             )
 
-            return {
-                data: data,
-            }
+            return data
         } catch (error) {
             console.error('getTestAllResult', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
