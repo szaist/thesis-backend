@@ -11,38 +11,58 @@ export class TestService {
     //Getters
     async getTestById(testId: number) {
         try {
-            const test = await this.prisma.test.findFirstOrThrow({
+            // const test = await this.prisma.test.findFirstOrThrow({
+            //     where: {
+            //         id: testId,
+            //     },
+            // })
+            // const question = await this.prisma.question.findMany({
+            //     where: {
+            //         testId: testId,
+            //     },
+            // })
+            // const questionsWithAnswers = await question.reduce(
+            //     async (arr: any, q: Question) => {
+            //         const results = await arr
+            //         const answers = await this.prisma.answer.findMany({
+            //             where: {
+            //                 questionId: q.id,
+            //             },
+            //         })
+            //         results.push({
+            //             ...q,
+            //             answers: [...answers],
+            //         })
+            //         return results
+            //     },
+            //     [],
+            // )
+            // return { ...test, questions: questionsWithAnswers }
+
+            const result = await this.prisma.test.findFirstOrThrow({
                 where: {
                     id: testId,
                 },
-            })
-
-            const question = await this.prisma.question.findMany({
-                where: {
-                    testId: testId,
-                },
-            })
-
-            const questionsWithAnswers = await question.reduce(
-                async (arr: any, q: Question) => {
-                    const results = await arr
-                    const answers = await this.prisma.answer.findMany({
-                        where: {
-                            questionId: q.id,
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    Question: {
+                        select: {
+                            id: true,
+                            text: true,
+                            type: true,
+                            Answer: {
+                                select: {
+                                    id: true,
+                                    point: true,
+                                    text: true,
+                                },
+                            },
                         },
-                    })
-
-                    results.push({
-                        ...q,
-                        answers: [...answers],
-                    })
-
-                    return results
+                    },
                 },
-                [],
-            )
-
-            return { ...test, questions: questionsWithAnswers }
+            })
         } catch (error) {
             console.error('getTestById: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -59,6 +79,17 @@ export class TestService {
                 where: {
                     ownerId: ownerId,
                 },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                        },
+                    },
+                },
             })
 
             return tests
@@ -74,31 +105,30 @@ export class TestService {
 
     async getTestsByCourseId(courseId: number) {
         try {
-            const testIds = await this.prisma.upComingTest.findMany({
+            const tests = await this.prisma.upComingTest.findMany({
                 where: {
                     courseId,
                 },
                 select: {
-                    testId: true,
+                    test: {
+                        select: {
+                            id: true,
+                            title: true,
+                            description: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    email: true,
+                                },
+                            },
+                        },
+                    },
                 },
             })
 
-            const tests = await testIds.reduce(
-                async (currentTests: any, currentId) => {
-                    const result = await currentTests
-
-                    const test = await this.prisma.test.findFirst({
-                        where: { id: currentId.testId },
-                    })
-
-                    result.push(test)
-
-                    return result
-                },
-                [],
-            )
-
-            return tests
+            return tests.map((t) => t.test)
         } catch (error) {
             console.error('getTestsByCourseId: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -131,9 +161,7 @@ export class TestService {
                 data: { ...dto, ownerId },
             })
 
-            return {
-                data: createdTest,
-            }
+            return createdTest
         } catch (error) {
             console.error('InsertTest: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

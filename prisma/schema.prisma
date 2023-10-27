@@ -25,9 +25,11 @@ model User {
   Tests            Test[]
   QuestionAnswered QuestionAnswered[]
   TestFilled       TestFilled[]
-  Course           Course[]
-  CourseToUser     CourseToUser[]
-  UpComingTest     UpComingTest[]
+
+  UpComingTests UpComingTest[]
+
+  ParticipatingCourses CourseToUser[]
+  OwnedCourses         Course[]
 
   @@map("users")
 }
@@ -37,13 +39,14 @@ model Test {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ownerId  Int
-  user     User       @relation(fields: [ownerId], references: [id])
-  Question Question[]
+  ownerId Int
+  user    User @relation(fields: [ownerId], references: [id])
 
-  title        String
-  description  String
-  UpComingTest UpComingTest[]
+  title       String
+  description String
+
+  Questions     Question[]
+  UpComingTests UpComingTest[]
 
   @@map("tests")
 }
@@ -54,8 +57,9 @@ model Question {
   updatedAt DateTime @updatedAt
 
   testId Int
-  test   Test     @relation(fields: [testId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Answer Answer[]
+  test   Test @relation(fields: [testId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  Answers Answer[]
 
   text             String
   type             QuestionTypes      @default(SELECT_ONE)
@@ -72,8 +76,9 @@ model Answer {
   questionId Int
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  text             String
-  point            Float              @default(0)
+  text  String
+  point Float  @default(0)
+
   QuestionAnswered QuestionAnswered[]
 
   @@map("answers")
@@ -127,8 +132,9 @@ model UpComingTest {
   ownerId Int
   owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  startDate        DateTime
-  lastStartDate    DateTime
+  startDate     DateTime
+  lastStartDate DateTime
+
   TestFilled       TestFilled[]
   QuestionAnswered QuestionAnswered[]
 
@@ -143,10 +149,10 @@ model Course {
   name        String
   description String?
 
+  owner   User @relation(fields: [ownerId], references: [id])
   ownerId Int
-  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  CourseToUser CourseToUser[]
+  Participants CourseToUser[]
   UpComingTest UpComingTest[]
 
   @@map("courses")

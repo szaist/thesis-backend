@@ -54,9 +54,7 @@ export class UpcomingtestService {
                 {},
             )
 
-            return {
-                data: upcomingTests,
-            }
+            return upcomingTests
         } catch (error) {
             console.error('getUpcomingTestsByUserId: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -73,6 +71,18 @@ export class UpcomingtestService {
                 where: {
                     ownerId: ownerId,
                 },
+                select: {
+                    id: true,
+                    startDate: true,
+                    lastStartDate: true,
+                    test: {
+                        select: {
+                            id: true,
+                            description: true,
+                            title: true,
+                        },
+                    },
+                },
             })
         } catch (error) {}
     }
@@ -85,9 +95,7 @@ export class UpcomingtestService {
                 },
             })
 
-            return {
-                data: upcomingTests,
-            }
+            return upcomingTests
         } catch (error) {
             console.error('getUpcomingTestsByCourseId: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -100,15 +108,32 @@ export class UpcomingtestService {
 
     async getUpcomingTestById(id: number) {
         try {
-            const comingTest = await this.prisma.upComingTest.findUnique({
+            const comingTest = await this.prisma.upComingTest.findFirst({
                 where: {
                     id: id,
                 },
+                select: {
+                    id: true,
+                    startDate: true,
+                    lastStartDate: true,
+                    owner: {
+                        select: {
+                            email: true,
+                            firstName: true,
+                            lastName: true,
+                        },
+                    },
+                    test: {
+                        select: {
+                            id: true,
+                            title: true,
+                            description: true,
+                        },
+                    },
+                },
             })
 
-            return {
-                data: comingTest,
-            }
+            return comingTest
         } catch (error) {
             console.error('getUpcomingTestById: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -125,9 +150,7 @@ export class UpcomingtestService {
                 data: { ...dto, ownerId },
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('insertUpcomingTest: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

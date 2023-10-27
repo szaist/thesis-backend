@@ -20,7 +20,7 @@ export class UpcomingtestController {
     constructor(private upcomingtestService: UpcomingtestService) {}
 
     @UseGuards(RolesGuard)
-    @Roles(ROLE.STUDENT, ROLE.TEACHER)
+    @Roles(ROLE.STUDENT)
     @Get()
     async getUpcomingTests(@GetUser() user: User) {
         return this.upcomingtestService.getUpcomingTestsByUserId(user.id)
