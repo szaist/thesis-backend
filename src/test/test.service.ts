@@ -63,6 +63,8 @@ export class TestService {
                     },
                 },
             })
+
+            return result
         } catch (error) {
             console.error('getTestById: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
