@@ -24,6 +24,8 @@ export class RolesGuard implements CanActivate {
             context.getHandler(),
         )
 
+        if (!roles) return true
+
         const request = context.switchToHttp().getRequest()
 
         if (request?.user) {
@@ -31,7 +33,7 @@ export class RolesGuard implements CanActivate {
 
             const user = await this.userService.findById(id)
 
-            return roles.includes(user.data.role)
+            return roles.includes(user.role)
         }
 
         return false

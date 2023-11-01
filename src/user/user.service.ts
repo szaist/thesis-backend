@@ -15,7 +15,7 @@ export class UserService {
                 },
             })
 
-            return { data: user }
+            return user
         } catch (error) {
             console.error('findById', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -30,7 +30,7 @@ export class UserService {
         try {
             const users = await this.prisma.user.findMany()
 
-            return { data: users }
+            return users
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 throw Errors.codes[error.code]

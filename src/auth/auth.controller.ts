@@ -1,5 +1,5 @@
-import { Controller, HttpStatus, Post } from '@nestjs/common'
-import { Body, HttpCode } from '@nestjs/common/decorators'
+import { Controller, Post } from '@nestjs/common'
+import { Body } from '@nestjs/common/decorators'
 import { AuthService } from './auth.service'
 import { AuthDto } from './dto'
 import { Public } from './decorator/public.decorator'
