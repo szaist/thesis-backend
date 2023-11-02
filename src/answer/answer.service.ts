@@ -17,9 +17,7 @@ export class AnswerService {
                 },
             })
 
-            return {
-                data: answers,
-            }
+            return answers
         } catch (error) {
             console.error('getAnswersById: ', error)
             throw error
@@ -34,7 +32,7 @@ export class AnswerService {
                 update: dto,
                 create: dto,
             })
-            return { data: response }
+            return response
         } catch (error) {
             console.error('insertAnswer: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -54,9 +52,7 @@ export class AnswerService {
                 data: dto,
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('updateAnswer: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -75,9 +71,7 @@ export class AnswerService {
                 },
             })
 
-            return {
-                data: response,
-            }
+            return response
         } catch (error) {
             console.error('deleteAnswer: ', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
