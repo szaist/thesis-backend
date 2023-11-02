@@ -47,12 +47,12 @@ export class TestService {
                     id: true,
                     title: true,
                     description: true,
-                    Question: {
+                    Questions: {
                         select: {
                             id: true,
                             text: true,
                             type: true,
-                            Answer: {
+                            Answers: {
                                 select: {
                                     id: true,
                                     point: true,

@@ -168,6 +168,8 @@ model CourseToUser {
 
   courseId Int
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, courseId])
 }
 
 enum QuestionTypes {
