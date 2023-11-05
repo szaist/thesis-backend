@@ -114,8 +114,6 @@ export class CourseService {
                 return courses.find((c) => con.courseId === c.id)
             })
 
-            console.log(userCourses)
-
             return userCourses
         } catch (error) {
             console.error('getUserCourses', error)

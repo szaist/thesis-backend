@@ -6,6 +6,7 @@ import {
     Param,
     ParseIntPipe,
     Post,
+    Query,
     UseGuards,
 } from '@nestjs/common'
 import { InsertUpcomingTestDto } from './dto'
@@ -22,7 +23,13 @@ export class UpcomingtestController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.STUDENT)
     @Get()
-    async getUpcomingTests(@GetUser() user: User) {
+    async getUpcomingTests(
+        @GetUser() user: User,
+        @Query('simple') single: boolean,
+    ) {
+        if (single)
+            return this.upcomingtestService.getUpcomingTestsByUser(user.id)
+
         return this.upcomingtestService.getUpcomingTestsByUserId(user.id)
     }
 

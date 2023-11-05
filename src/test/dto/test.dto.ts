@@ -1,3 +1,4 @@
+import { QuestionTypes } from '@prisma/client'
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class InsertTestDto {
@@ -18,4 +19,17 @@ export class UpdateTestDto {
     @IsString()
     @IsOptional()
     description: string
+}
+
+export class SaveTestQuestionsDto {
+    @IsNotEmpty()
+    Questions: {
+        text: string
+        type: QuestionTypes
+        Answers: {
+            id: number
+            point: number
+            text: string
+        }[]
+    }[]
 }

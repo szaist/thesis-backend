@@ -54,6 +54,8 @@ export class UpcomingtestService {
                 {},
             )
 
+            console.log(JSON.stringify(upcomingTests, undefined, 2))
+
             return upcomingTests
         } catch (error) {
             console.error('getUpcomingTestsByUserId: ', error)
@@ -63,6 +65,45 @@ export class UpcomingtestService {
 
             throw error
         }
+    }
+
+    async getUpcomingTestsByUser(userId: number) {
+        const courseToUsers = await this.prisma.courseToUser.findMany({
+            where: {
+                userId: userId,
+            },
+            select: {
+                course: {
+                    select: {
+                        UpComingTest: {
+                            select: {
+                                startDate: true,
+                                lastStartDate: true,
+                                id: true,
+                                course: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        description: true,
+                                    },
+                                },
+                                test: {
+                                    select: {
+                                        id: true,
+                                        title: true,
+                                        description: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        })
+
+        return courseToUsers
+            .flatMap((m) => m.course.UpComingTest)
+            .sort((a, b) => b.lastStartDate.valueOf() - a.startDate.valueOf())
     }
 
     async getUpcomingTestByOwnerId(ownerId: number) {
@@ -75,6 +116,13 @@ export class UpcomingtestService {
                     id: true,
                     startDate: true,
                     lastStartDate: true,
+                    course: {
+                        select: {
+                            id: true,
+                            description: true,
+                            name: true,
+                        },
+                    },
                     test: {
                         select: {
                             id: true,

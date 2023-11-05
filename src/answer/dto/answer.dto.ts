@@ -1,10 +1,4 @@
-import {
-    IsNotEmpty,
-    IsString,
-    IsNumber,
-    IsBoolean,
-    IsOptional,
-} from 'class-validator'
+import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator'
 
 export class InsertAnswerDto {
     @IsOptional()

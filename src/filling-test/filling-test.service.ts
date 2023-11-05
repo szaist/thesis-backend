@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { AnswerQuestion, StartDto } from './dto'
 import { Errors } from 'src/prisma/errors'
@@ -22,10 +22,58 @@ export class FillingTestService {
         }
     }
 
+    async getFilledById(id: number) {
+        try {
+            return await this.prisma.testFilled.findFirstOrThrow({
+                where: {
+                    id,
+                },
+                select: {
+                    id: true,
+                    startDate: true,
+                    endDate: true,
+                    submitted: true,
+                    upComingTest: true,
+                    user: true,
+                },
+            })
+        } catch (error) {}
+    }
+
+    async answerMoreQuestion(dto: AnswerQuestion[], userId: number) {
+        try {
+            await this.prisma.questionAnswered.createMany({
+                data: {
+                    ...dto.map((m) => ({ ...m, userId })),
+                },
+            })
+        } catch (error) {
+            console.error('answerMoreQuestion', error)
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                throw Errors.codes[error.code]
+            }
+            throw error
+        }
+    }
+
     async startTest(dto: StartDto, userId: number) {
         try {
+            const alreadyStarted = await this.prisma.testFilled.findFirst({
+                where: {
+                    upComingTestId: dto.upComingTestId,
+                    userId: userId,
+                },
+            })
+
+            if (alreadyStarted) throw new BadRequestException()
+
             const response = await this.prisma.testFilled.create({
                 data: { ...dto, userId },
+                select: {
+                    id: true,
+                    startDate: true,
+                    upComingTest: true,
+                },
             })
 
             return response

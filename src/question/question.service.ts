@@ -27,11 +27,7 @@ export class QuestionService {
                 },
             })
 
-            return {
-                data: {
-                    question: { ...question, answers },
-                },
-            }
+            return { ...question, answers }
         } catch (error) {
             console.error('questionGetById', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -49,9 +45,7 @@ export class QuestionService {
                 },
             })
 
-            return {
-                data: questions,
-            }
+            return questions
         } catch (error) {
             console.error('questionsByTestId', error)
             throw error

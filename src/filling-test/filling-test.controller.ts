@@ -26,6 +26,13 @@ export class FillingTestController {
     }
 
     @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT, ROLE.TEACHER)
+    @Get('/filled/:id')
+    async getFilled(@Param('id', ParseIntPipe) id: number) {
+        return this.fillingTestService.getFilledById(id)
+    }
+
+    @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Get('/test-results/:userId')
     async getAllTestResult(@Param('userId', ParseIntPipe) userId: number) {
@@ -46,6 +53,16 @@ export class FillingTestController {
     @Post('/answer')
     async answerQuestion(@Body() dto: AnswerQuestion, @GetUser() user: User) {
         return this.fillingTestService.answerQuestion(dto, user.id)
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT)
+    @Post('/answer/more')
+    async answerMoreQuestion(
+        @Body() dto: AnswerQuestion[],
+        @GetUser() user: User,
+    ) {
+        return this.fillingTestService.answerMoreQuestion(dto, user.id)
     }
 
     @UseGuards(RolesGuard)

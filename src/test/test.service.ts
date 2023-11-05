@@ -1,44 +1,16 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma, Question } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { Errors } from 'src/prisma/errors'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { InsertTestDto, UpdateTestDto } from './dto'
+import { InsertTestDto, SaveTestQuestionsDto, UpdateTestDto } from './dto'
 
 @Injectable()
 export class TestService {
     constructor(private prisma: PrismaService) {}
 
     //Getters
-    async getTestById(testId: number) {
+    async getTestById(testId: number, isStudent = false) {
         try {
-            // const test = await this.prisma.test.findFirstOrThrow({
-            //     where: {
-            //         id: testId,
-            //     },
-            // })
-            // const question = await this.prisma.question.findMany({
-            //     where: {
-            //         testId: testId,
-            //     },
-            // })
-            // const questionsWithAnswers = await question.reduce(
-            //     async (arr: any, q: Question) => {
-            //         const results = await arr
-            //         const answers = await this.prisma.answer.findMany({
-            //             where: {
-            //                 questionId: q.id,
-            //             },
-            //         })
-            //         results.push({
-            //             ...q,
-            //             answers: [...answers],
-            //         })
-            //         return results
-            //     },
-            //     [],
-            // )
-            // return { ...test, questions: questionsWithAnswers }
-
             const result = await this.prisma.test.findFirstOrThrow({
                 where: {
                     id: testId,
@@ -55,7 +27,7 @@ export class TestService {
                             Answers: {
                                 select: {
                                     id: true,
-                                    point: true,
+                                    point: !isStudent,
                                     text: true,
                                 },
                             },
@@ -209,5 +181,33 @@ export class TestService {
                 throw Errors.codes[error.code]
             }
         }
+    }
+
+    async saveTestQuestions(testId: number, dto: SaveTestQuestionsDto) {
+        await this.prisma.question.deleteMany({
+            where: {
+                testId,
+            },
+        })
+
+        for (const q of dto.Questions) {
+            const question = await this.prisma.question.create({
+                data: {
+                    testId,
+                    text: q.text,
+                    type: q.type,
+                },
+            })
+
+            await this.prisma.answer.createMany({
+                data: q.Answers.map((a) => ({
+                    questionId: question.id,
+                    text: a.text,
+                    point: a.point,
+                })),
+            })
+        }
+
+        return this.getTestById(testId)
     }
 }

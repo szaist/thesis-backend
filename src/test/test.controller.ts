@@ -9,7 +9,7 @@ import {
     UseGuards,
 } from '@nestjs/common'
 import { ParseIntPipe } from '@nestjs/common/pipes'
-import { InsertTestDto, UpdateTestDto } from './dto'
+import { InsertTestDto, SaveTestQuestionsDto, UpdateTestDto } from './dto'
 import { TestService } from './test.service'
 import { GetUser } from 'src/auth/decorator'
 import { ROLE, User } from '@prisma/client'
@@ -30,8 +30,11 @@ export class TestController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.STUDENT, ROLE.TEACHER)
     @Get('/:id')
-    async getTestById(@Param('id', ParseIntPipe) testId: number) {
-        return this.testService.getTestById(testId)
+    async getTestById(
+        @Param('id', ParseIntPipe) testId: number,
+        @GetUser() user: User,
+    ) {
+        return this.testService.getTestById(testId, user.role === ROLE.STUDENT)
     }
 
     @UseGuards(RolesGuard)
@@ -53,6 +56,16 @@ export class TestController {
     @Post()
     async insertTest(@Body() dto: InsertTestDto, @GetUser() user: User) {
         return this.testService.insertTest(dto, user.id)
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER)
+    @Post('/save/:id')
+    async saveTestWithQuestions(
+        @Param('id', ParseIntPipe) testId,
+        @Body() dto: SaveTestQuestionsDto,
+    ) {
+        return await this.testService.saveTestQuestions(testId, dto)
     }
 
     @UseGuards(RolesGuard)
