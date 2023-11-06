@@ -141,6 +141,9 @@ export class UpcomingtestService {
                 where: {
                     courseId: courseId,
                 },
+                include: {
+                    test: true,
+                },
             })
 
             return upcomingTests
