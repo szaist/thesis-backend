@@ -281,7 +281,12 @@ export class FillingTestService {
     async getFilledTestsByUserAndCourse(courseId: number, userId: number) {
         const filledTestByUser = await this.getFilledTestsByUser(userId)
 
-        return filledTestByUser.filter((t) => t.course.id == courseId)
+        return await Promise.all(
+            filledTestByUser.filter((t) => {
+                console.log(t)
+                return t.upComingTest.course.id == courseId
+            }),
+        )
     }
 
     //Whats test user filled
@@ -297,9 +302,16 @@ export class FillingTestService {
                 upComingTest: {
                     select: {
                         id: true,
-                        course: true,
+                        course: {
+                            select: {
+                                id: true,
+                                name: true,
+                                description: true,
+                            },
+                        },
                         test: {
                             select: {
+                                id: true,
                                 title: true,
                                 description: true,
                             },
@@ -309,16 +321,33 @@ export class FillingTestService {
             },
         })
 
-        const reformed = filledTests.map((f) => ({
-            id: f.upComingTest.id,
-            course: f.upComingTest.course,
-            startDate: f.startDate,
-            endDate: f.endDate,
-            submitted: f.submitted,
-            ...f.upComingTest.test,
-        }))
+        const res = filledTests.reduce(async (memo: any, vers) => {
+            const results = await memo
+            const v = await vers
 
-        return reformed
+            const maxPoints = await this.getTestMaxPoint(v.upComingTest.test.id)
+            const reachedPoints = await this.getReachedPoints(
+                v.upComingTest.id,
+                userId,
+            )
+
+            const value = { ...v, maxPoints, reachedPoints }
+
+            return [...results, value]
+        }, [])
+
+        // filledTests.forEach(async (f) => {
+        //     await reformed.push({
+        //         id: f.upComingTest.id,
+        //         course: f.upComingTest.course,
+        //         startDate: f.startDate,
+        //         endDate: f.endDate,
+        //         submitted: f.submitted,
+        //         ...f.upComingTest.test,
+        //     })
+        // })
+
+        return res
     }
 
     async getAnswersForFilledTest(upcomingTestId: number, userId: number) {
