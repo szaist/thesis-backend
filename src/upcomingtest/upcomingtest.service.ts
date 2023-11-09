@@ -80,6 +80,7 @@ export class UpcomingtestService {
                                 startDate: true,
                                 lastStartDate: true,
                                 id: true,
+                                TestFilled: true,
                                 course: {
                                     select: {
                                         id: true,
