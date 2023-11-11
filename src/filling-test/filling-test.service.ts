@@ -269,12 +269,28 @@ export class FillingTestService {
                 upComingTest: {
                     select: {
                         course: true,
+                        testId: true,
                     },
                 },
             },
         })
 
-        return filledTests
+        const res = filledTests.reduce(async (memo: any, v) => {
+            const result = await memo
+            const value = await v
+
+            const reachedPoints = await this.getReachedPoints(
+                upcomingTestId,
+                v.user.id,
+            )
+            const maxPoints = await this.getTestMaxPoint(v.upComingTest.testId)
+
+            const finalObject = { ...v, maxPoints, reachedPoints }
+
+            return [...result, finalObject]
+        }, [])
+
+        return res
     }
 
     //Get user filled tests in the course
@@ -335,17 +351,6 @@ export class FillingTestService {
 
             return [...results, value]
         }, [])
-
-        // filledTests.forEach(async (f) => {
-        //     await reformed.push({
-        //         id: f.upComingTest.id,
-        //         course: f.upComingTest.course,
-        //         startDate: f.startDate,
-        //         endDate: f.endDate,
-        //         submitted: f.submitted,
-        //         ...f.upComingTest.test,
-        //     })
-        // })
 
         return res
     }

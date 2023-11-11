@@ -32,12 +32,12 @@ export class FillingTestController {
     //     return this.fillingTestService.getFilledTests(user.id)
     // }
 
-    // @UseGuards(RolesGuard)
-    // @Roles(ROLE.STUDENT, ROLE.TEACHER)
-    // @Get('/filled/:id')
-    // async getFilled(@Param('id', ParseIntPipe) id: number) {
-    //     return this.fillingTestService.getFilledById(id)
-    // }
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT, ROLE.TEACHER)
+    @Get('/filled/:id')
+    async getFilled(@Param('id', ParseIntPipe) id: number) {
+        return this.fillingTestService.getFilledById(id)
+    }
 
     // @UseGuards(RolesGuard)
     // @Roles(ROLE.TEACHER)
