@@ -1,10 +1,18 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { AuthDto } from './dto'
+import { AuthDto, RegisterDto } from './dto'
 import * as argon from 'argon2'
 import { Prisma } from '@prisma/client'
 import { JwtService } from '@nestjs/jwt/dist'
 import { ConfigService } from '@nestjs/config/dist'
+import { ForgotPasswordDto } from './dto/forgot-password.dto'
+import { MailerService } from '@nestjs-modules/mailer'
+import { ChangePasswordDto } from './dto/change-password.dto'
+
+interface JwtTokenPayload {
+    sub: number
+    email: string
+}
 
 @Injectable()
 export class AuthService {
@@ -12,14 +20,17 @@ export class AuthService {
         private prisma: PrismaService,
         private jwt: JwtService,
         private config: ConfigService,
+        private readonly mailService: MailerService,
     ) {}
-    async signup(dto: AuthDto) {
+    async signup(dto: RegisterDto) {
         const hash = await argon.hash(dto.password)
 
         try {
             const user = await this.prisma.user.create({
                 data: {
                     email: dto.email,
+                    firstName: dto.firstName,
+                    lastName: dto.lastName,
                     hash,
                 },
             })
@@ -69,6 +80,57 @@ export class AuthService {
 
         return {
             access_token: token,
+        }
+    }
+
+    async forgotPassword(dto: ForgotPasswordDto) {
+        try {
+            const user = await this.prisma.user.findFirstOrThrow({
+                where: {
+                    email: dto.email,
+                },
+            })
+
+            const token = await this.jwt.signAsync(
+                { id: user.id },
+                {
+                    secret: this.config.get('JWT_SECRET'),
+                    expiresIn: '1d',
+                },
+            )
+
+            const frontendUrl = this.config.get('FRONTEND_URL')
+
+            await this.mailService.sendMail({
+                to: dto.email,
+                subject: 'Reset password',
+                text: `There is your reset password link: ${frontendUrl}/forgot-password/${user.id}/${token}`,
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async changePassword(dto: ChangePasswordDto) {
+        const { token } = dto
+
+        try {
+            const userData = this.jwt.verify(token, {
+                secret: this.config.get('JWT_SECRET'),
+            }) as JwtTokenPayload
+
+            const newHashedPassword = await argon.hash(dto.password)
+
+            await this.prisma.user.update({
+                where: {
+                    id: userData.sub,
+                },
+                data: {
+                    hash: newHashedPassword,
+                },
+            })
+        } catch (error) {
+            console.log(error)
         }
     }
 }

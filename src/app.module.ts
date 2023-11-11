@@ -13,10 +13,30 @@ import { UpcomingtestModule } from './upcomingtest/upcomingtest.module'
 import { UserService } from './user/user.service'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtGuard } from './auth/guard'
+import { MailerModule } from '@nestjs-modules/mailer'
 
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        MailerModule.forRootAsync({
+            useFactory: () => ({
+                transport: {
+                    host: 'smtp.gmail.com',
+                    port: 587,
+                    secure: false,
+                    auth: {
+                        user: process.env.EMAIL_USER,
+                        pass: process.env.EMAIL_PASSWORD,
+                    },
+                    tls: {
+                        rejectUnauthorized: false,
+                    },
+                },
+                defaults: {
+                    from: 'TestMaker <testmaker202301@gmail.com>',
+                },
+            }),
+        }),
         AuthModule,
         UserModule,
         QuestionModule,
