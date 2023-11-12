@@ -122,4 +122,30 @@ export class QuestionService {
             throw error
         }
     }
+
+    async upsertQuestionImage(
+        source: string,
+        questionId: number,
+        userId: number,
+    ) {
+        try {
+            const response = await this.prisma.questionImage.upsert({
+                where: {
+                    questionId: questionId,
+                },
+                create: {
+                    source: source,
+                    ownerId: userId,
+                    questionId: questionId,
+                },
+                update: {
+                    source,
+                },
+            })
+
+            return response
+        } catch (error) {
+            console.log('Error during upsert image', error)
+        }
+    }
 }

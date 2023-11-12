@@ -30,6 +30,7 @@ model User {
 
   ParticipatingCourses CourseToUser[]
   OwnedCourses         Course[]
+  QuestionImages       QuestionImage[]
 
   @@map("users")
 }
@@ -64,6 +65,7 @@ model Question {
   text             String
   type             QuestionTypes      @default(SELECT_ONE)
   QuestionAnswered QuestionAnswered[]
+  QuestionImage    QuestionImage?
 
   @@map("questions")
 }
@@ -170,6 +172,18 @@ model CourseToUser {
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([userId, courseId])
+}
+
+model QuestionImage {
+  id Int @id @default(autoincrement())
+
+  questionId Int      @unique
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  source String
+
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id])
 }
 
 enum QuestionTypes {
