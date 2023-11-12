@@ -3,10 +3,14 @@ import { PrismaService } from 'src/prisma/prisma.service'
 import { InsertCourseDto } from './dto'
 import { Errors } from 'src/prisma/errors'
 import { Prisma } from '@prisma/client'
+import { MailerService } from '@nestjs-modules/mailer'
 
 @Injectable()
 export class CourseService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly mailService: MailerService,
+    ) {}
 
     async getCourses() {
         try {
@@ -126,11 +130,21 @@ export class CourseService {
 
     async addUserToCourse(courseId: number, userId: number) {
         try {
-            await this.prisma.courseToUser.create({
+            const response = await this.prisma.courseToUser.create({
                 data: {
                     userId,
                     courseId,
                 },
+                select: {
+                    course: true,
+                    user: true,
+                },
+            })
+
+            await this.mailService.sendMail({
+                to: response.user.email,
+                subject: `Kurzus hozzárendelés: ${response.course.name}`,
+                text: `Hozzálettél rendelve ehhez a kurzushoz: ${response.course.name}`,
             })
         } catch (error) {
             console.error('addUserToCourse', error)
