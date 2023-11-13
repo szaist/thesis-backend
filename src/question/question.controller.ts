@@ -56,9 +56,26 @@ export class QuestionController {
         return this.questionService.getQuestionById(questionId)
     }
 
+    // @UseGuards(RolesGuard)
+    // @Roles(ROLE.TEACHER)
+    // @Post('/image/:questionId')
+    // async upsertQuestionImage(
+    //     @Param('questionId', ParseIntPipe) questionId: number,
+
+    //     @GetUser() user: User,
+    //     @Body() body: any,
+    // ) {
+    //     console.log(body)
+    //     return this.questionService.upsertQuestionImage(
+    //         `question-images/${file.filename}`,
+    //         questionId,
+    //         user.id,
+    //     )
+    // }
+
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
-    @Post('/image/:questionId')
+    @Post()
     @UseInterceptors(
         FileInterceptor('image', {
             storage: diskStorage({
@@ -76,8 +93,8 @@ export class QuestionController {
             }),
         }),
     )
-    async upsertQuestionImage(
-        @Param('questionId', ParseIntPipe) questionId: number,
+    async insertQuestion(
+        @Body() dto: InsertQuestionDto,
         @UploadedFile(
             new ParseFilePipeBuilder()
                 .addFileTypeValidator({
@@ -93,18 +110,11 @@ export class QuestionController {
         file: Express.Multer.File,
         @GetUser() user: User,
     ) {
-        return this.questionService.upsertQuestionImage(
+        return this.questionService.insertQuestion(
+            dto,
             `question-images/${file.filename}`,
-            questionId,
             user.id,
         )
-    }
-
-    @UseGuards(RolesGuard)
-    @Roles(ROLE.TEACHER)
-    @Post()
-    async insertQuestion(@Body() dto: InsertQuestionDto) {
-        return this.questionService.insertQuestion(dto)
     }
 
     @UseGuards(RolesGuard)

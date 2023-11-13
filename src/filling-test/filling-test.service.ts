@@ -256,6 +256,15 @@ export class FillingTestService {
         }
     }
 
+    async getFilledTestsByUpcomingTestIdFilteredByUserId(
+        upcomingTestId: number,
+        userId: number,
+    ) {
+        const filled = await this.getFilledTestsByUpcomingTestId(upcomingTestId)
+
+        return filled.filter((f) => f.user.id === userId)[0]
+    }
+
     async getFilledTestsByUpcomingTestId(upcomingTestId: number) {
         // Az adott kiírt tesztet ki töltötte ki
         const filledTests = await this.prisma.testFilled.findMany({
@@ -263,13 +272,21 @@ export class FillingTestService {
                 upComingTestId: upcomingTestId,
             },
             select: {
-                user: true,
+                user: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        email: true,
+                    },
+                },
                 id: true,
                 submitted: true,
                 upComingTest: {
                     select: {
                         course: true,
                         testId: true,
+                        test: true,
                     },
                 },
             },
@@ -277,7 +294,6 @@ export class FillingTestService {
 
         const res = filledTests.reduce(async (memo: any, v) => {
             const result = await memo
-            const value = await v
 
             const reachedPoints = await this.getReachedPoints(
                 upcomingTestId,
@@ -299,7 +315,6 @@ export class FillingTestService {
 
         return await Promise.all(
             filledTestByUser.filter((t) => {
-                console.log(t)
                 return t.upComingTest.course.id == courseId
             }),
         )

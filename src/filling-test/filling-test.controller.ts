@@ -47,6 +47,19 @@ export class FillingTestController {
     // }
 
     @UseGuards(RolesGuard)
+    @Roles(ROLE.STUDENT)
+    @Get('filled-tests/student/test-info/:upcomingTestId')
+    async getStudentUpcomingTestInfo(
+        @GetUser() user: User,
+        @Param('upcomingTestId', ParseIntPipe) upcomingTestId,
+    ) {
+        return this.fillingTestService.getFilledTestsByUpcomingTestIdFilteredByUserId(
+            upcomingTestId,
+            user.id,
+        )
+    }
+
+    @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Get('filled-tests/teacher/upcomingtest/:upcomingTestId/user/:userId')
     async getStudentAnswersFromTeacherSide(

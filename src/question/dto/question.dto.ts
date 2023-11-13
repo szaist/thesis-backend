@@ -9,17 +9,16 @@ import { QuestionTypes } from 'src/enums'
 
 export class InsertQuestionDto {
     @IsOptional()
-    @IsNumber()
-    id: number
+    @IsString()
+    id: string
 
-    @IsNumber()
     @IsNotEmpty()
-    testId: number
+    testId: string
 
     @IsString()
     @IsNotEmpty()
     text: string
 
-    @IsEnum(QuestionTypes)
-    type: QuestionTypes
+    @IsString()
+    type: string
 }

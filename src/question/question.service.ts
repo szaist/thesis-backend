@@ -53,23 +53,56 @@ export class QuestionService {
     }
 
     // Insert
-    async insertQuestion(dto: InsertQuestionDto) {
+    async insertQuestion(
+        dto: InsertQuestionDto,
+        source: string,
+        userId: number,
+    ) {
         const questionTypeStrings = Object.keys(QuestionTypes)
+        const qType = dto.type === 'SELECT_ONE' ? 1 : 0
+        const testId = Number(dto.testId)
+        const questionId = dto.id ? Number(dto.id) : -1
+
+        console.log(dto.testId)
+
         try {
             const response = await this.prisma.question.upsert({
-                where: { id: dto.id < 0 ? -1 : dto.id },
+                where: { id: questionId ?? -1 },
                 update: {
                     ...dto,
-                    type: questionTypeStrings[dto.type] as QuestionTypes,
+                    id: questionId,
+                    testId: testId,
+                    type: questionTypeStrings[qType] as QuestionTypes,
                 },
                 create: {
-                    testId: dto.testId,
+                    testId: testId,
                     text: dto.text,
-                    type: questionTypeStrings[dto.type] as QuestionTypes,
+                    type: questionTypeStrings[qType] as QuestionTypes,
                 },
             })
 
-            return response
+            await this.prisma.questionImage.upsert({
+                where: {
+                    questionId: response.id,
+                },
+                create: {
+                    source: source,
+                    ownerId: userId,
+                    questionId: response.id,
+                },
+                update: {
+                    source,
+                },
+            })
+
+            return await this.prisma.question.findFirstOrThrow({
+                where: {
+                    id: response.id,
+                },
+                include: {
+                    QuestionImage: true,
+                },
+            })
         } catch (error) {
             console.error('insertQuestion', error)
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -90,6 +123,8 @@ export class QuestionService {
                 },
                 data: {
                     ...dto,
+                    testId: Number(dto.testId),
+                    id: Number(dto.id),
                     type: questionTypeStrings[dto.type] as QuestionTypes,
                 },
             })

@@ -24,6 +24,7 @@ export class TestService {
                             id: true,
                             text: true,
                             type: true,
+                            QuestionImage: true,
                             Answers: {
                                 select: {
                                     id: true,
