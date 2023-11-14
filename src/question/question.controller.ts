@@ -20,10 +20,11 @@ import { RolesGuard } from 'src/auth/guard'
 import { Roles } from 'src/auth/decorator/roles.decorator'
 import { ROLE, User } from '@prisma/client'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { join } from 'path'
+import { extname, join } from 'path'
 import { createReadStream } from 'fs'
 import { Public } from 'src/auth/decorator/public.decorator'
 import { GetUser } from 'src/auth/decorator'
+import { diskStorage } from 'multer'
 
 @UseGuards(RolesGuard)
 @Roles(ROLE.STUDENT, ROLE.TEACHER)
@@ -54,7 +55,23 @@ export class QuestionController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Post('/image/:questionId')
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(
+        FileInterceptor('image', {
+            storage: diskStorage({
+                destination: './question-images',
+                filename(req, file, callback) {
+                    const suffix =
+                        Date.now() + '-' + Math.round(Math.random() * 1e8)
+
+                    const extension = extname(file.originalname)
+
+                    const fileName = `${suffix}${extension}`
+
+                    callback(null, fileName)
+                },
+            }),
+        }),
+    )
     async upsertQuestionImage(
         @Param('questionId', ParseIntPipe) questionId: number,
         @UploadedFile(
