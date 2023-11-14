@@ -22,7 +22,6 @@ import { ROLE, User } from '@prisma/client'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { join } from 'path'
 import { createReadStream } from 'fs'
-import { ConfigService } from '@nestjs/config'
 import { Public } from 'src/auth/decorator/public.decorator'
 import { GetUser } from 'src/auth/decorator'
 
@@ -30,10 +29,7 @@ import { GetUser } from 'src/auth/decorator'
 @Roles(ROLE.STUDENT, ROLE.TEACHER)
 @Controller('question')
 export class QuestionController {
-    constructor(
-        private questionService: QuestionService,
-        private configService: ConfigService,
-    ) {}
+    constructor(private questionService: QuestionService) {}
 
     @Get('/test/:id')
     async getQuestionByTest(@Param('id', ParseIntPipe) testId) {
@@ -58,6 +54,7 @@ export class QuestionController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Post('/image/:questionId')
+    @UseInterceptors(FileInterceptor('image'))
     async upsertQuestionImage(
         @Param('questionId', ParseIntPipe) questionId: number,
         @UploadedFile(
