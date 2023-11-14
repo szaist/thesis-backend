@@ -5,6 +5,12 @@ import {
     IsEnum,
     IsOptional,
 } from 'class-validator'
+import {
+    HasMimeType,
+    IsFile,
+    MaxFileSize,
+    MemoryStoredFile,
+} from 'nestjs-form-data'
 import { QuestionTypes } from 'src/enums'
 
 export class InsertQuestionDto {
@@ -21,4 +27,10 @@ export class InsertQuestionDto {
 
     @IsString()
     type: string
+
+    @IsOptional()
+    @IsFile()
+    @MaxFileSize(1e6)
+    @HasMimeType(['image/jpeg', 'image/png'])
+    image: MemoryStoredFile
 }

@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { JwtGuard } from './auth/guard'
 import { MailerModule } from '@nestjs-modules/mailer'
 import { MulterModule } from '@nestjs/platform-express'
+import { NestjsFormDataModule } from 'nestjs-form-data'
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { MulterModule } from '@nestjs/platform-express'
                 },
             }),
         }),
+        NestjsFormDataModule.config({ isGlobal: true }),
         AuthModule,
         UserModule,
         QuestionModule,

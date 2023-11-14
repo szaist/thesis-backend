@@ -26,6 +26,7 @@ import { createReadStream } from 'fs'
 import { ConfigService } from '@nestjs/config'
 import { Public } from 'src/auth/decorator/public.decorator'
 import { GetUser } from 'src/auth/decorator'
+import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data'
 
 @UseGuards(RolesGuard)
 @Roles(ROLE.STUDENT, ROLE.TEACHER)
@@ -76,45 +77,52 @@ export class QuestionController {
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
     @Post()
-    @UseInterceptors(
-        FileInterceptor('image', {
-            storage: diskStorage({
-                destination: './question-images',
-                filename: (req, file, callback) => {
-                    const suffix =
-                        Date.now() + '-' + Math.round(Math.random() * 1e9)
+    // @UseInterceptors(
+    //     FileInterceptor('image', {
+    //         storage: diskStorage({
+    //             destination: './question-images',
+    //             filename: (req, file, callback) => {
+    //                 const suffix =
+    //                     Date.now() + '-' + Math.round(Math.random() * 1e9)
 
-                    const extension = extname(file.originalname)
+    //                 const extension = extname(file.originalname)
 
-                    const fileName = `${suffix}${extension}`
+    //                 const fileName = `${suffix}${extension}`
 
-                    callback(null, fileName)
-                },
-            }),
-        }),
-    )
+    //                 callback(null, fileName)
+    //             },
+    //         }),
+    //     }),
+    // )
+    @FormDataRequest({
+        storage: FileSystemStoredFile,
+        fileSystemStoragePath: '/question-images',
+        autoDeleteFile: false,
+    })
     async insertQuestion(
         @Body() dto: InsertQuestionDto,
-        @UploadedFile(
-            new ParseFilePipeBuilder()
-                .addFileTypeValidator({
-                    fileType: '.(png|jpeg|jpg)',
-                })
-                .addMaxSizeValidator({
-                    maxSize: 200000,
-                })
-                .build({
-                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-                }),
-        )
-        file: Express.Multer.File,
+        // @UploadedFile(
+        //     new ParseFilePipeBuilder()
+        //         .addFileTypeValidator({
+        //             fileType: '.(png|jpeg|jpg)',
+        //         })
+        //         .addMaxSizeValidator({
+        //             maxSize: 200000,
+        //         })
+        //         .build({
+        //             errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        //         }),
+        // )
+        // file: Express.Multer.File,
         @GetUser() user: User,
     ) {
-        return this.questionService.insertQuestion(
-            dto,
-            `question-images/${file.filename}`,
-            user.id,
-        )
+        console.log(dto)
+
+        // return this.questionService.insertQuestion(
+        //     dto,
+        //     `question-images/${dto.image.filename}`,
+        //     user.id,
+        // )
     }
 
     @UseGuards(RolesGuard)
