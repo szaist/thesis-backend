@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config'
 
 import { AuthModule } from './auth/auth.module'
 import { UserModule } from './user/user.module'
@@ -14,8 +14,6 @@ import { UserService } from './user/user.service'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtGuard } from './auth/guard'
 import { MailerModule } from '@nestjs-modules/mailer'
-import { MulterModule } from '@nestjs/platform-express'
-import { NestjsFormDataModule } from 'nestjs-form-data'
 
 @Module({
     imports: [
@@ -39,7 +37,6 @@ import { NestjsFormDataModule } from 'nestjs-form-data'
                 },
             }),
         }),
-        NestjsFormDataModule.config({ isGlobal: true }),
         AuthModule,
         UserModule,
         QuestionModule,

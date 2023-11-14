@@ -1,3 +1,4 @@
+import { Transform, Type } from 'class-transformer'
 import {
     IsNotEmpty,
     IsString,
@@ -5,32 +6,23 @@ import {
     IsEnum,
     IsOptional,
 } from 'class-validator'
-import {
-    HasMimeType,
-    IsFile,
-    MaxFileSize,
-    MemoryStoredFile,
-} from 'nestjs-form-data'
 import { QuestionTypes } from 'src/enums'
 
 export class InsertQuestionDto {
     @IsOptional()
     @IsString()
-    id: string
+    id: number
 
+    @Type(() => Number)
     @IsNotEmpty()
-    testId: string
+    testId: number
 
     @IsString()
     @IsNotEmpty()
     text: string
 
+    @IsNotEmpty()
+    @Type(() => Number)
     @IsString()
-    type: string
-
-    @IsOptional()
-    @IsFile()
-    @MaxFileSize(1e6)
-    @HasMimeType(['image/jpeg', 'image/png'])
-    image: MemoryStoredFile
+    type: QuestionTypes
 }

@@ -55,29 +55,26 @@ export class QuestionService {
     // Insert
     async insertQuestion(
         dto: InsertQuestionDto,
-        source: string,
         userId: number,
+        source?: Express.Multer.File,
     ) {
         const questionTypeStrings = Object.keys(QuestionTypes)
-        const qType = dto.type === 'SELECT_ONE' ? 1 : 0
-        const testId = Number(dto.testId)
-        const questionId = dto.id ? Number(dto.id) : -1
 
-        console.log(dto.testId)
+        const path = `question-images/${source.filename}`
 
         try {
             const response = await this.prisma.question.upsert({
-                where: { id: questionId ?? -1 },
+                where: { id: dto.id },
                 update: {
                     ...dto,
-                    id: questionId,
-                    testId: testId,
-                    type: questionTypeStrings[qType] as QuestionTypes,
+                    id: dto.id,
+                    testId: dto.testId,
+                    type: questionTypeStrings[dto.type] as QuestionTypes,
                 },
                 create: {
-                    testId: testId,
+                    testId: dto.testId,
                     text: dto.text,
-                    type: questionTypeStrings[qType] as QuestionTypes,
+                    type: questionTypeStrings[dto.type] as QuestionTypes,
                 },
             })
 
@@ -86,12 +83,12 @@ export class QuestionService {
                     questionId: response.id,
                 },
                 create: {
-                    source: source,
+                    source: path,
                     ownerId: userId,
                     questionId: response.id,
                 },
                 update: {
-                    source,
+                    source: path,
                 },
             })
 
