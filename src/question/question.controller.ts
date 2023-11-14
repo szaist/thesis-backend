@@ -55,52 +55,11 @@ export class QuestionController {
         return this.questionService.getQuestionById(questionId)
     }
 
-    // @UseGuards(RolesGuard)
-    // @Roles(ROLE.TEACHER)
-    // @Post('/image/:questionId')
-    // async upsertQuestionImage(
-    //     @Param('questionId', ParseIntPipe) questionId: number,
-
-    //     @GetUser() user: User,
-    //     @Body() body: any,
-    // ) {
-    //     console.log(body)
-    //     return this.questionService.upsertQuestionImage(
-    //         `question-images/${file.filename}`,
-    //         questionId,
-    //         user.id,
-    //     )
-    // }
-
     @UseGuards(RolesGuard)
     @Roles(ROLE.TEACHER)
-    @Post()
-    // @UseInterceptors(
-    //     FileInterceptor('image', {
-    //         storage: diskStorage({
-    //             destination: './question-images',
-    //             filename: (req, file, callback) => {
-    //                 const suffix =
-    //                     Date.now() + '-' + Math.round(Math.random() * 1e9)
-
-    //                 const extension = extname(file.originalname)
-
-    //                 const fileName = `${suffix}${extension}`
-
-    //                 callback(null, fileName)
-    //             },
-    //         }),
-    //     }),
-    // )
-    // @FormDataRequest({
-    //     storage: FileSystemStoredFile,
-    //     fileSystemStoragePath: '/question-images',
-    //     autoDeleteFile: false,
-    // })
-    @UseInterceptors(FileInterceptor('image'))
-    async insertQuestion(
-        @Body() dto: InsertQuestionDto,
-        @GetUser() user: User,
+    @Post('/image/:questionId')
+    async upsertQuestionImage(
+        @Param('questionId', ParseIntPipe) questionId: number,
         @UploadedFile(
             new ParseFilePipeBuilder()
                 .addFileTypeValidator({
@@ -113,9 +72,21 @@ export class QuestionController {
                     errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
                 }),
         )
-        image?: Express.Multer.File,
+        image: Express.Multer.File,
+        @GetUser() user: User,
     ) {
-        return this.questionService.insertQuestion(dto, user.id, image)
+        return this.questionService.upsertQuestionImage(
+            `question-images/${image.filename}`,
+            questionId,
+            user.id,
+        )
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER)
+    @Post()
+    async insertQuestion(@Body() dto: InsertQuestionDto) {
+        return this.questionService.insertQuestion(dto)
     }
 
     @UseGuards(RolesGuard)

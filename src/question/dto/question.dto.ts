@@ -1,10 +1,9 @@
-import { Transform, Type } from 'class-transformer'
 import {
     IsNotEmpty,
     IsString,
+    IsOptional,
     IsNumber,
     IsEnum,
-    IsOptional,
 } from 'class-validator'
 import { QuestionTypes } from 'src/enums'
 
@@ -13,7 +12,7 @@ export class InsertQuestionDto {
     @IsString()
     id: number
 
-    @Type(() => Number)
+    @IsNumber()
     @IsNotEmpty()
     testId: number
 
@@ -22,7 +21,6 @@ export class InsertQuestionDto {
     text: string
 
     @IsNotEmpty()
-    @Type(() => Number)
-    @IsString()
+    @IsEnum(QuestionTypes)
     type: QuestionTypes
 }
