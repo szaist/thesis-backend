@@ -24,6 +24,7 @@ export class UpdateTestDto {
 export class SaveTestQuestionsDto {
     @IsNotEmpty()
     Questions: {
+        id?: number
         text: string
         type: QuestionTypes
         Answers: {

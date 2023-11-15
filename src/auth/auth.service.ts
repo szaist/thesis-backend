@@ -10,8 +10,7 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { ChangePasswordDto } from './dto/change-password.dto'
 
 interface JwtTokenPayload {
-    sub: number
-    email: string
+    id: number
 }
 
 @Injectable()
@@ -104,7 +103,7 @@ export class AuthService {
             await this.mailService.sendMail({
                 to: dto.email,
                 subject: 'Reset password',
-                text: `There is your reset password link: ${frontendUrl}/forgot-password/${user.id}/${token}`,
+                text: `There is your reset password link: ${frontendUrl}/auth/forgot-password/${user.id}/${token}`,
             })
         } catch (error) {
             console.log(error)
@@ -119,16 +118,18 @@ export class AuthService {
                 secret: this.config.get('JWT_SECRET'),
             }) as JwtTokenPayload
 
-            const newHashedPassword = await argon.hash(dto.password)
+            if (userData) {
+                const newHashedPassword = await argon.hash(dto.password)
 
-            await this.prisma.user.update({
-                where: {
-                    id: userData.sub,
-                },
-                data: {
-                    hash: newHashedPassword,
-                },
-            })
+                await this.prisma.user.update({
+                    where: {
+                        id: userData.id,
+                    },
+                    data: {
+                        hash: newHashedPassword,
+                    },
+                })
+            }
         } catch (error) {
             console.log(error)
         }

@@ -185,28 +185,40 @@ export class TestService {
     }
 
     async saveTestQuestions(testId: number, dto: SaveTestQuestionsDto) {
-        await this.prisma.question.deleteMany({
-            where: {
-                testId,
-            },
-        })
-
         for (const q of dto.Questions) {
-            const question = await this.prisma.question.create({
-                data: {
+            console.log(q)
+            const question = await this.prisma.question.upsert({
+                where: {
+                    id: q.id < 0 ? -1 : q.id,
+                },
+                update: {
+                    testId,
+                    text: q.text,
+                    type: q.type,
+                },
+                create: {
                     testId,
                     text: q.text,
                     type: q.type,
                 },
             })
 
-            await this.prisma.answer.createMany({
-                data: q.Answers.map((a) => ({
-                    questionId: question.id,
-                    text: a.text,
-                    point: a.point,
-                })),
-            })
+            for (const a of q.Answers) {
+                await this.prisma.answer.upsert({
+                    where: {
+                        id: a.id ?? -1,
+                    },
+                    update: {
+                        point: a.point,
+                        text: a.text,
+                    },
+                    create: {
+                        questionId: question.id,
+                        point: a.point,
+                        text: a.text,
+                    },
+                })
+            }
         }
 
         return this.getTestById(testId)

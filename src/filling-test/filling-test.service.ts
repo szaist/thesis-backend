@@ -379,6 +379,7 @@ export class FillingTestService {
             select: {
                 question: {
                     select: {
+                        QuestionImage: true,
                         id: true,
                         text: true,
                         type: true,

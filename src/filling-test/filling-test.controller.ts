@@ -18,33 +18,12 @@ import { GetUser } from 'src/auth/decorator'
 export class FillingTestController {
     constructor(private fillingTestService: FillingTestService) {}
 
-    // @UseGuards(RolesGuard)
-    // @Roles(ROLE.STUDENT)
-    // @Get('/test-results/student')
-    // async getResultForStudent(@GetUser() user: User) {
-    //     return this.fillingTestService.getTestAllResult(user.id)
-    // }
-
-    // @UseGuards(RolesGuard)
-    // @Roles(ROLE.STUDENT)
-    // @Get('/test-results/filled')
-    // async getFilledTests(@GetUser() user: User) {
-    //     return this.fillingTestService.getFilledTests(user.id)
-    // }
-
     @UseGuards(RolesGuard)
     @Roles(ROLE.STUDENT, ROLE.TEACHER)
     @Get('/filled/:id')
     async getFilled(@Param('id', ParseIntPipe) id: number) {
         return this.fillingTestService.getFilledById(id)
     }
-
-    // @UseGuards(RolesGuard)
-    // @Roles(ROLE.TEACHER)
-    // @Get('/test-results/:userId')
-    // async getAllTestResult(@Param('userId', ParseIntPipe) userId: number) {
-    //     return this.fillingTestService.getTestAllResult(userId)
-    // }
 
     @UseGuards(RolesGuard)
     @Roles(ROLE.STUDENT)
@@ -56,6 +35,19 @@ export class FillingTestController {
         return this.fillingTestService.getFilledTestsByUpcomingTestIdFilteredByUserId(
             upcomingTestId,
             user.id,
+        )
+    }
+
+    @UseGuards(RolesGuard)
+    @Roles(ROLE.TEACHER)
+    @Get('filled-tests/teacher/test-info/:upcomingTestId/user/:userId')
+    async getTeacherInfoStudentUpcomingTestInfo(
+        @Param('userId', ParseIntPipe) userId,
+        @Param('upcomingTestId', ParseIntPipe) upcomingTestId,
+    ) {
+        return this.fillingTestService.getFilledTestsByUpcomingTestIdFilteredByUserId(
+            upcomingTestId,
+            userId,
         )
     }
 

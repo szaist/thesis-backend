@@ -9,15 +9,15 @@ import { QuestionTypes } from 'src/enums'
 
 export class InsertQuestionDto {
     @IsOptional()
-    @IsString()
+    @IsNumber()
     id: number
 
-    @IsNumber()
     @IsNotEmpty()
+    @IsNumber()
     testId: number
 
-    @IsString()
     @IsNotEmpty()
+    @IsString()
     text: string
 
     @IsNotEmpty()

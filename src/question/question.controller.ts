@@ -80,7 +80,7 @@ export class QuestionController {
                     fileType: '.(png|jpeg|jpg)',
                 })
                 .addMaxSizeValidator({
-                    maxSize: 5000000,
+                    maxSize: 10000000,
                 })
                 .build({
                     errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -90,7 +90,7 @@ export class QuestionController {
         @GetUser() user: User,
     ) {
         return this.questionService.upsertQuestionImage(
-            `question-images/${image.filename}`,
+            `${image.filename}`,
             questionId,
             user.id,
         )
