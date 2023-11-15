@@ -10,7 +10,7 @@ import { MailerService } from '@nestjs-modules/mailer'
 import { ChangePasswordDto } from './dto/change-password.dto'
 
 interface JwtTokenPayload {
-    id: number
+    sub: number
 }
 
 @Injectable()
@@ -91,7 +91,7 @@ export class AuthService {
             })
 
             const token = await this.jwt.signAsync(
-                { id: user.id },
+                { sub: user.id },
                 {
                     secret: this.config.get('JWT_SECRET'),
                     expiresIn: '10m',
@@ -123,7 +123,7 @@ export class AuthService {
 
                 await this.prisma.user.update({
                     where: {
-                        id: userData.id,
+                        id: userData.sub,
                     },
                     data: {
                         hash: newHashedPassword,
