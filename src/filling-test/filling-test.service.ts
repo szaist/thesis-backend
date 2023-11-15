@@ -34,7 +34,15 @@ export class FillingTestService {
                     endDate: true,
                     submitted: true,
                     upComingTest: true,
-                    user: true,
+                    user: {
+                        select: {
+                            email: true,
+                            firstName: true,
+                            id: true,
+                            lastName: true,
+                            role: true,
+                        },
+                    },
                 },
             })
         } catch (error) {}
